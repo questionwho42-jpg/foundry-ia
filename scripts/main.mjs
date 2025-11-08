@@ -42,6 +42,12 @@ Hooks.once('ready', function() {
 Hooks.on('getSceneControlButtons', (controls) => {
     if (!game.user.isGM) return;
     
+    // Garantir que controls é um array
+    if (!Array.isArray(controls)) {
+        console.warn('AI Dungeon Master | controls não é um array');
+        return;
+    }
+    
     const notesControl = controls.find(c => c.name === 'notes');
     if (notesControl) {
         notesControl.tools.push({
