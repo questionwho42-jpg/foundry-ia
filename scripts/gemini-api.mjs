@@ -248,6 +248,64 @@ Cite a regra oficial quando possível e forneça exemplos práticos.`;
     }
     
     /**
+     * Gera dados estruturados para cena de combate
+     * @param {Object} sceneParams - Parâmetros da cena
+     * @returns {Promise<Object>} Dados da cena estruturados
+     */
+    async generateCombatScene(sceneParams) {
+        const {
+            locationType = 'taverna',
+            playerLevel = 1,
+            enemyCount = 2,
+            difficulty = 'moderado'
+        } = sceneParams;
+        
+        const prompt = `Gere dados para cena de combate em Pathfinder 2e (aventura SOLO):
+
+Local: ${locationType}
+Nível do Jogador: ${playerLevel}
+Número de Inimigos: ${enemyCount}
+Dificuldade: ${difficulty}
+
+Retorne APENAS um JSON válido (sem markdown, sem explicações) com esta estrutura EXATA:
+{
+  "sceneName": "nome curto da cena",
+  "description": "1-2 frases descrevendo o local",
+  "gridSize": tamanho em quadrados (ex: 30),
+  "rooms": [
+    {"x1": 0, "y1": 0, "x2": 20, "y2": 15, "name": "sala principal"}
+  ],
+  "walls": [
+    {"x1": 0, "y1": 0, "x2": 2000, "y2": 0}
+  ],
+  "lights": [
+    {"x": 500, "y": 500, "bright": 20, "dim": 40, "color": "#ff9329"}
+  ],
+  "playerStart": {"x": 10, "y": 12},
+  "enemies": [
+    {"name": "Goblin", "level": ${Math.max(playerLevel - 1, -1)}, "x": 5, "y": 5}
+  ]
+}
+
+IMPORTANTE: Responda APENAS o JSON, nada mais.`;
+        
+        const response = await this.chat(prompt, { resetHistory: true, temperature: 0.5 });
+        
+        // Extrair JSON da resposta (remover possíveis markdown code blocks)
+        let jsonStr = response.trim();
+        if (jsonStr.startsWith('```')) {
+            jsonStr = jsonStr.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+        }
+        
+        try {
+            return JSON.parse(jsonStr);
+        } catch (error) {
+            console.error('Erro ao parsear JSON da cena:', error);
+            throw new Error('IA retornou formato inválido. Tente novamente.');
+        }
+    }
+    
+    /**
      * Faz chamada à API do Gemini
      * @param {Object} requestBody - Corpo da requisição
      * @returns {Promise<Object>} Resposta da API

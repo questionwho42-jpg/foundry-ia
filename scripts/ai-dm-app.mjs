@@ -58,6 +58,7 @@ export class AIDungeonMasterApp extends Application {
         // Listeners para ações rápidas
         html.find('#start-adventure').on('click', () => this._onStartAdventure(html));
         html.find('#describe-scene').on('click', () => this._onDescribeScene(html));
+        html.find('#generate-combat-scene').on('click', () => this._onGenerateCombatScene(html));
         html.find('#generate-npc').on('click', () => this._onGenerateNPC(html));
         html.find('#clear-chat').on('click', () => this._onClearChat(html));
         
@@ -252,6 +253,182 @@ export class AIDungeonMasterApp extends Application {
         } catch (error) {
             console.error('AI DM | Erro ao descrever cena:', error);
             ui.notifications.error('Erro ao gerar descrição da cena');
+        }
+    }
+    
+    /**
+     * Abre diálogo para gerar cena de combate
+     */
+    async _onGenerateCombatScene(html) {
+        new Dialog({
+            title: 'Gerar Cena de Combate',
+            content: `
+                <form>
+                    <div class="form-group">
+                        <label>Tipo de Local:</label>
+                        <select name="locationType">
+                            <option value="taverna">Taverna</option>
+                            <option value="caverna">Caverna</option>
+                            <option value="floresta">Clareira na Floresta</option>
+                            <option value="ruinas">Ruínas Antigas</option>
+                            <option value="masmorr">Masmorra</option>
+                            <option value="cidade">Rua da Cidade</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nível do Jogador:</label>
+                        <input type="number" name="playerLevel" min="1" max="20" value="1"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Número de Inimigos:</label>
+                        <input type="number" name="enemyCount" min="1" max="8" value="2"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Dificuldade:</label>
+                        <select name="difficulty">
+                            <option value="trivial">Trivial</option>
+                            <option value="baixo">Baixo</option>
+                            <option value="moderado" selected>Moderado</option>
+                            <option value="severo">Severo</option>
+                            <option value="extremo">Extremo</option>
+                        </select>
+                    </div>
+                </form>
+            `,
+            buttons: {
+                generate: {
+                    icon: '<i class="fas fa-map"></i>',
+                    label: 'Gerar Cena',
+                    callback: async (html) => {
+                        const form = html[0].querySelector('form');
+                        const formData = new FormData(form);
+                        const params = {
+                            locationType: formData.get('locationType'),
+                            playerLevel: parseInt(formData.get('playerLevel')),
+                            enemyCount: parseInt(formData.get('enemyCount')),
+                            difficulty: formData.get('difficulty')
+                        };
+                        await this._generateCombatScene(params);
+                    }
+                },
+                cancel: {
+                    icon: '<i class="fas fa-times"></i>',
+                    label: 'Cancelar'
+                }
+            },
+            default: 'generate'
+        }).render(true);
+    }
+    
+    /**
+     * Gera cena de combate completa
+     */
+    async _generateCombatScene(params) {
+        const apiKey = game.settings.get('ai-dungeon-master-pf2e', 'geminiApiKey');
+        if (!apiKey) {
+            ui.notifications.error('Configure sua chave API primeiro!');
+            return;
+        }
+        
+        try {
+            if (!this.gemini) {
+                const model = game.settings.get('ai-dungeon-master-pf2e', 'geminiModel');
+                this.gemini = new GeminiAPI(apiKey, model);
+            }
+            
+            ui.notifications.info('Gerando cena de combate... Aguarde.');
+            const sceneData = await this.gemini.generateCombatScene(params);
+            
+            // Criar a cena no Foundry
+            const gridSize = 100; // pixels por quadrado
+            const sceneWidth = (sceneData.gridSize || 30) * gridSize;
+            const sceneHeight = (sceneData.gridSize || 30) * gridSize;
+            
+            const scene = await Scene.create({
+                name: sceneData.sceneName || 'Cena de Combate IA',
+                width: sceneWidth,
+                height: sceneHeight,
+                grid: {
+                    type: 1, // Grid quadrado
+                    size: gridSize,
+                    distance: 5, // 5 pés por quadrado (padrão PF2e)
+                    units: 'pés'
+                },
+                backgroundColor: '#2b2b2b',
+                tokenVision: true,
+                fogExploration: true,
+                globalLight: false
+            });
+            
+            // Criar paredes
+            if (sceneData.walls && sceneData.walls.length > 0) {
+                await scene.createEmbeddedDocuments("Wall", sceneData.walls.map(w => ({
+                    c: [w.x1, w.y1, w.x2, w.y2],
+                    move: 0, // Bloqueia movimento
+                    sight: 0, // Bloqueia visão
+                    sound: 0  // Bloqueia som
+                })));
+            }
+            
+            // Criar iluminação
+            if (sceneData.lights && sceneData.lights.length > 0) {
+                await scene.createEmbeddedDocuments("AmbientLight", sceneData.lights.map(l => ({
+                    x: l.x,
+                    y: l.y,
+                    config: {
+                        bright: l.bright || 20,
+                        dim: l.dim || 40,
+                        color: l.color || '#ff9329',
+                        animation: {
+                            type: 'torch',
+                            speed: 5,
+                            intensity: 5
+                        }
+                    }
+                })));
+            }
+            
+            // Criar NPCs inimigos e colocar tokens
+            if (sceneData.enemies && sceneData.enemies.length > 0) {
+                for (const enemy of sceneData.enemies) {
+                    // Criar ator NPC
+                    const actor = await Actor.create({
+                        name: enemy.name || 'Inimigo',
+                        type: 'npc',
+                        img: 'icons/svg/mystery-man.svg',
+                        system: {
+                            details: {
+                                level: { value: enemy.level || 1 }
+                            }
+                        }
+                    });
+                    
+                    // Colocar token na cena
+                    await scene.createEmbeddedDocuments("Token", [{
+                        name: actor.name,
+                        actorId: actor.id,
+                        x: enemy.x * gridSize,
+                        y: enemy.y * gridSize,
+                        disposition: -1 // Hostil
+                    }]);
+                }
+            }
+            
+            // Ativar a cena
+            await scene.view();
+            
+            ui.notifications.success(`Cena "${sceneData.sceneName}" criada com sucesso!`);
+            
+            this.conversationHistory.push({
+                role: 'assistant',
+                content: `**Cena de Combate Criada**\n\n${sceneData.description}\n\n*Inimigos: ${sceneData.enemies?.length || 0}*\n*Abra a cena para ver o layout!*`,
+                timestamp: new Date()
+            });
+            
+            this.render();
+        } catch (error) {
+            console.error('AI DM | Erro ao gerar cena:', error);
+            ui.notifications.error(`Erro ao gerar cena: ${error.message}`);
         }
     }
     
