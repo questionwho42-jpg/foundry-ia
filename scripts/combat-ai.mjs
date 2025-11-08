@@ -6,19 +6,19 @@
 export class CombatAI {
   constructor(geminiAPI) {
     this.gemini = geminiAPI;
-    this.automationLevel = 'suggestions'; // 'off', 'suggestions', 'full'
+    this.automationLevel = "suggestions"; // 'off', 'suggestions', 'full'
   }
 
   /**
    * Inicializa hooks de combate
    */
   initialize() {
-    console.log('Combat AI | Inicializando sistema de IA tática...');
-    
+    console.log("Combat AI | Inicializando sistema de IA tática...");
+
     // Hook quando turno muda
-    Hooks.on('combatTurn', async (combat, updateData, updateOptions) => {
+    Hooks.on("combatTurn", async (combat, updateData, updateOptions) => {
       if (!game.user.isGM) return; // Apenas GM executa
-      if (this.automationLevel === 'off') return;
+      if (this.automationLevel === "off") return;
 
       const currentCombatant = combat.combatant;
       if (!currentCombatant) return;
@@ -26,66 +26,88 @@ export class CombatAI {
       const token = currentCombatant.token;
       if (!token) return;
 
-      // Verificar se é NPC
-      if (token.actor.type === 'npc' && token.disposition === -1) {
+      console.log(\Combat AI | Turno mudou para: \, tipo: \, disposition: \);
+
+      // Verificar se é NPC inimigo
+      if (token.actor.type === "npc" && token.document.disposition === -1) {
         console.log(`Combat AI | Turno do NPC: ${token.name}`);
-        
+
         // Aguardar um pouco para não parecer instantâneo
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
         try {
           await this.handleNPCTurn(token, combat);
         } catch (error) {
-          console.error('Combat AI | Erro ao processar turno do NPC:', error);
+          console.error("Combat AI | Erro ao processar turno do NPC:", error);
           ui.notifications.error(`Erro na IA tática: ${error.message}`);
         }
       }
     });
 
     // Event listener para botões das sugestões
-    $(document).on('click', '.ai-action-btn', async (event) => {
+    $(document).on("click", ".ai-action-btn", async (event) => {
       if (!game.user.isGM) return;
 
       const button = $(event.currentTarget);
-      const action = button.data('action');
-      const tokenId = button.data('token-id');
+      const action = button.data("action");
+      const tokenId = button.data("token-id");
 
       // Recuperar decisão armazenada
       const storedData = game.aiCombat?.[tokenId];
       if (!storedData) {
-        ui.notifications.warn('Dados da decisão não encontrados');
+        ui.notifications.warn("Dados da decisão não encontrados");
         return;
       }
 
       const token = canvas.tokens.get(tokenId);
       if (!token) {
-        ui.notifications.error('Token não encontrado');
+        ui.notifications.error("Token não encontrado");
         return;
       }
 
       try {
         switch (action) {
-          case 'move':
-            await this.executeMove(token, storedData.decision, storedData.combatState);
+          case "move":
+            await this.executeMove(
+              token,
+              storedData.decision,
+              storedData.combatState
+            );
             break;
-          case 'attack':
-            await this.executeAttack(token, storedData.decision, storedData.combatState);
+          case "attack":
+            await this.executeAttack(
+              token,
+              storedData.decision,
+              storedData.combatState
+            );
             break;
-          case 'execute-all':
-            await this.executeMove(token, storedData.decision, storedData.combatState);
-            await this.executeAttack(token, storedData.decision, storedData.combatState);
+          case "execute-all":
+            await this.executeMove(
+              token,
+              storedData.decision,
+              storedData.combatState
+            );
+            await this.executeAttack(
+              token,
+              storedData.decision,
+              storedData.combatState
+            );
             break;
         }
 
         // Desabilitar botões após execução
-        button.closest('.ai-combat-suggestion').find('.ai-action-btn').prop('disabled', true).css('opacity', '0.5');
+        button
+          .closest(".ai-combat-suggestion")
+          .find(".ai-action-btn")
+          .prop("disabled", true)
+          .css("opacity", "0.5");
       } catch (error) {
-        console.error('Combat AI | Erro ao executar ação:', error);
+        console.error("Combat AI | Erro ao executar ação:", error);
         ui.notifications.error(`Erro ao executar ação: ${error.message}`);
       }
     });
 
-    console.log('Combat AI | Sistema inicializado!');
+    console.log("Combat AI | Sistema inicializado!");
   }
 
   /**
@@ -100,12 +122,12 @@ export class CombatAI {
     // IA decide ação
     const decision = await this.gemini.decideNPCAction(npcToken, combatState);
 
-    console.log('Combat AI | Decisão da IA:', decision);
+    console.log("Combat AI | Decisão da IA:", decision);
 
     // Exibir sugestão com botões
-    if (this.automationLevel === 'suggestions') {
+    if (this.automationLevel === "suggestions") {
       await this.showSuggestionCard(npcToken, decision, combatState);
-    } else if (this.automationLevel === 'full') {
+    } else if (this.automationLevel === "full") {
       await this.executeDecision(npcToken, decision, combatState);
     }
   }
@@ -119,40 +141,46 @@ export class CombatAI {
 
     // Aliados (mesma disposição)
     const allies = allTokens
-      .filter(t => 
-        t.id !== npcToken.id && 
-        t.document.disposition === npcDisposition &&
-        t.actor.system.attributes.hp.value > 0
+      .filter(
+        (t) =>
+          t.id !== npcToken.id &&
+          t.document.disposition === npcDisposition &&
+          t.actor.system.attributes.hp.value > 0
       )
-      .map(t => ({
+      .map((t) => ({
         name: t.name,
         token: t,
         hp: t.actor.system.attributes.hp,
         gridX: Math.floor(t.x / 100),
         gridY: Math.floor(t.y / 100),
-        distance: Math.floor(canvas.grid.measureDistance(
-          {x: npcToken.x, y: npcToken.y},
-          {x: t.x, y: t.y}
-        ) / 5) // Converter para quadrados (5ft)
+        distance: Math.floor(
+          canvas.grid.measureDistance(
+            { x: npcToken.x, y: npcToken.y },
+            { x: t.x, y: t.y }
+          ) / 5
+        ), // Converter para quadrados (5ft)
       }));
 
     // Inimigos (disposição oposta)
     const enemies = allTokens
-      .filter(t => 
-        t.document.disposition === -npcDisposition &&
-        t.actor.system.attributes.hp.value > 0
+      .filter(
+        (t) =>
+          t.document.disposition === -npcDisposition &&
+          t.actor.system.attributes.hp.value > 0
       )
-      .map(t => ({
+      .map((t) => ({
         name: t.name,
         token: t,
         hp: t.actor.system.attributes.hp,
         ac: t.actor.system.attributes.ac.value,
         gridX: Math.floor(t.x / 100),
         gridY: Math.floor(t.y / 100),
-        distance: Math.floor(canvas.grid.measureDistance(
-          {x: npcToken.x, y: npcToken.y},
-          {x: t.x, y: t.y}
-        ) / 5)
+        distance: Math.floor(
+          canvas.grid.measureDistance(
+            { x: npcToken.x, y: npcToken.y },
+            { x: t.x, y: t.y }
+          ) / 5
+        ),
       }))
       .sort((a, b) => a.distance - b.distance); // Ordenar por distância
 
@@ -195,14 +223,18 @@ export class CombatAI {
 
     const message = await ChatMessage.create({
       user: game.user.id,
-      speaker: ChatMessage.getSpeaker({token: npcToken}),
+      speaker: ChatMessage.getSpeaker({ token: npcToken }),
       content: content,
-      type: CONST.CHAT_MESSAGE_TYPES.OTHER
+      type: CONST.CHAT_MESSAGE_TYPES.OTHER,
     });
 
     // Guardar decisão para quando botão for clicado
     game.aiCombat = game.aiCombat || {};
-    game.aiCombat[npcToken.id] = { decision, combatState, messageId: message.id };
+    game.aiCombat[npcToken.id] = {
+      decision,
+      combatState,
+      messageId: message.id,
+    };
   }
 
   /**
@@ -210,7 +242,9 @@ export class CombatAI {
    */
   async executeDecision(npcToken, decision, combatState) {
     // Implementar nas próximas tarefas
-    ui.notifications.info('Execução automática será implementada na próxima fase');
+    ui.notifications.info(
+      "Execução automática será implementada na próxima fase"
+    );
   }
 
   /**
@@ -220,16 +254,18 @@ export class CombatAI {
     const movement = decision.movement.toLowerCase();
 
     // Se deve ficar parado
-    if (movement.includes('ficar') || movement.includes('não se mover')) {
+    if (movement.includes("ficar") || movement.includes("não se mover")) {
       ui.notifications.info(`${token.name} permanece na posição atual`);
       return;
     }
 
     // Se deve aproximar de um alvo
-    const approachMatch = movement.match(/aproximar.*?(?:de |do |da )?([^\.,]+)/i);
+    const approachMatch = movement.match(
+      /aproximar.*?(?:de |do |da )?([^\.,]+)/i
+    );
     if (approachMatch) {
       const targetName = approachMatch[1].trim();
-      const targetToken = combatState.enemies.find(e => 
+      const targetToken = combatState.enemies.find((e) =>
         e.name.toLowerCase().includes(targetName.toLowerCase())
       )?.token;
 
@@ -239,16 +275,21 @@ export class CombatAI {
           targetToken.y - token.y,
           targetToken.x - token.x
         );
-        
+
         const newX = targetToken.x - Math.cos(direction) * 100; // 100px = 1 grid
         const newY = targetToken.y - Math.sin(direction) * 100;
 
-        await token.document.update({
-          x: newX,
-          y: newY
-        }, { animate: true, animation: { duration: 1000 } });
+        await token.document.update(
+          {
+            x: newX,
+            y: newY,
+          },
+          { animate: true, animation: { duration: 1000 } }
+        );
 
-        ui.notifications.info(`${token.name} se aproxima de ${targetToken.name}`);
+        ui.notifications.info(
+          `${token.name} se aproxima de ${targetToken.name}`
+        );
         return;
       }
     }
@@ -258,17 +299,22 @@ export class CombatAI {
     if (coordMatch) {
       const gridX = parseInt(coordMatch[1]);
       const gridY = parseInt(coordMatch[2]);
-      
-      await token.document.update({
-        x: gridX * 100,
-        y: gridY * 100
-      }, { animate: true, animation: { duration: 1000 } });
+
+      await token.document.update(
+        {
+          x: gridX * 100,
+          y: gridY * 100,
+        },
+        { animate: true, animation: { duration: 1000 } }
+      );
 
       ui.notifications.info(`${token.name} se move para (${gridX}, ${gridY})`);
       return;
     }
 
-    ui.notifications.warn(`Não foi possível interpretar o movimento: ${movement}`);
+    ui.notifications.warn(
+      `Não foi possível interpretar o movimento: ${movement}`
+    );
   }
 
   /**
@@ -280,19 +326,25 @@ export class CombatAI {
 
     // Encontrar ação no NPC
     const npc = token.actor;
-    const strike = npc.system.actions?.find(a => 
-      a.name.toLowerCase().includes(actionName.toLowerCase()) ||
-      a.label?.toLowerCase().includes(actionName.toLowerCase())
+    const strike = npc.system.actions?.find(
+      (a) =>
+        a.name.toLowerCase().includes(actionName.toLowerCase()) ||
+        a.label?.toLowerCase().includes(actionName.toLowerCase())
     );
 
     if (!strike) {
-      ui.notifications.warn(`Ação "${actionName}" não encontrada em ${token.name}`);
-      console.log('Combat AI | Ações disponíveis:', npc.system.actions?.map(a => a.name || a.label));
+      ui.notifications.warn(
+        `Ação "${actionName}" não encontrada em ${token.name}`
+      );
+      console.log(
+        "Combat AI | Ações disponíveis:",
+        npc.system.actions?.map((a) => a.name || a.label)
+      );
       return;
     }
 
     // Encontrar alvo
-    const targetToken = combatState.enemies.find(e => 
+    const targetToken = combatState.enemies.find((e) =>
       e.name.toLowerCase().includes(targetName.toLowerCase())
     )?.token;
 
@@ -303,10 +355,14 @@ export class CombatAI {
 
     // Executar ataque
     try {
-      ui.notifications.info(`${token.name} ataca ${targetToken.name} com ${strike.name || strike.label}!`);
-      
+      ui.notifications.info(
+        `${token.name} ataca ${targetToken.name} com ${
+          strike.name || strike.label
+        }!`
+      );
+
       // No PF2e, strikes têm métodos attack() e damage()
-      if (strike.attack && typeof strike.attack === 'function') {
+      if (strike.attack && typeof strike.attack === "function") {
         await strike.attack({ target: targetToken.actor });
       } else if (strike.variants) {
         // Algumas strikes têm variantes (MAP -0, -5, -10)
@@ -315,11 +371,11 @@ export class CombatAI {
           await variant.roll({ target: targetToken.actor });
         }
       } else {
-        ui.notifications.warn('Método de ataque não encontrado para esta ação');
-        console.log('Combat AI | Estrutura da strike:', strike);
+        ui.notifications.warn("Método de ataque não encontrado para esta ação");
+        console.log("Combat AI | Estrutura da strike:", strike);
       }
     } catch (error) {
-      console.error('Combat AI | Erro ao executar ataque:', error);
+      console.error("Combat AI | Erro ao executar ataque:", error);
       ui.notifications.error(`Erro ao executar ataque: ${error.message}`);
     }
   }
@@ -328,21 +384,25 @@ export class CombatAI {
    * Executa decisão automaticamente (modo Full Automation)
    */
   async executeDecision(npcToken, decision, combatState) {
-    ui.notifications.info(`🤖 Automação Total: ${npcToken.name} executa turno...`);
-    
+    ui.notifications.info(
+      `🤖 Automação Total: ${npcToken.name} executa turno...`
+    );
+
     try {
       // Executar movimento
       await this.executeMove(npcToken, decision, combatState);
-      
+
       // Aguardar animação de movimento
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
       // Executar ataque
       await this.executeAttack(npcToken, decision, combatState);
-      
-      ui.notifications.success(`✅ Turno de ${npcToken.name} executado automaticamente!`);
+
+      ui.notifications.success(
+        `✅ Turno de ${npcToken.name} executado automaticamente!`
+      );
     } catch (error) {
-      console.error('Combat AI | Erro na execução automática:', error);
+      console.error("Combat AI | Erro na execução automática:", error);
       ui.notifications.error(`Erro na automação: ${error.message}`);
     }
   }
