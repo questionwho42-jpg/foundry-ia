@@ -204,26 +204,31 @@ Faça o jogador SENTIR que está realmente lá.`;
             personality = 'aleatória'
         } = npcParams;
         
-        // Prompt MUITO simplificado para evitar thinking tokens
-        const prompt = `Crie um NPC para Pathfinder 2e:
+        // Ajustar nível de desafio para jogador solo (níveis baixos: -1, médios: -2, altos: -3)
+        const adjustedLevel = Math.max(level - 1, -1);
+        
+        // Prompt simplificado incluindo equipamentos
+        const prompt = `Crie um NPC para aventura SOLO em Pathfinder 2e:
 
 Ancestralidade: ${ancestry}
-Nível: ${level}
+Nível do Jogador: ${level}
+Nível do NPC: ${adjustedLevel} (ajustado para desafio solo)
 Papel: ${role}
 
 Forneça APENAS:
 - Nome
 - Aparência (2 frases)
 - Personalidade (2 frases)
-- O que ele sabe/oferece (1 frase)
+- Equipamento: liste 2-4 itens apropriados para nível ${adjustedLevel} (armas, armadura, itens úteis)
+- O que oferece ao jogador (1 frase)
 
-Seja DIRETO e CONCISO.`;
+Seja DIRETO. Sem lore extenso.`;
         
         const response = await this.chat(prompt, { resetHistory: true, temperature: 0.7 });
         
         return {
             description: response,
-            rawData: npcParams
+            rawData: { ...npcParams, adjustedLevel }
         };
     }
     

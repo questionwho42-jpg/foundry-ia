@@ -329,6 +329,9 @@ export class AIDungeonMasterApp extends Application {
             const nameMatch = npc.description.match(/\*\*Nome:\*\*\s*([^\n]+)/i);
             const npcName = nameMatch ? nameMatch[1].trim() : 'NPC Gerado pela IA';
             
+            // Usar nível ajustado para desafio solo
+            const npcLevel = npc.rawData.adjustedLevel || params.level || 1;
+            
             // Criar ator NPC no Foundry
             const actor = await Actor.create({
                 name: npcName,
@@ -336,14 +339,14 @@ export class AIDungeonMasterApp extends Application {
                 img: 'icons/svg/mystery-man.svg',
                 system: {
                     details: {
-                        level: { value: params.level || 1 },
+                        level: { value: npcLevel },
                         publicNotes: npc.description
                     }
                 }
             });
             
             if (actor) {
-                ui.notifications.success(`NPC "${npcName}" criado com sucesso!`);
+                ui.notifications.success(`NPC "${npcName}" (Nível ${npcLevel}) criado com sucesso!`);
                 
                 // Abrir ficha do NPC
                 actor.sheet.render(true);
