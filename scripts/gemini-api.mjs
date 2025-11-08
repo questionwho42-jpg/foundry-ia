@@ -293,6 +293,23 @@ Cite a regra oficial quando possível e forneça exemplos práticos.`;
             throw new Error('Resposta bloqueada por filtros de segurança. Tente reformular sua pergunta.');
         }
         
+        // IMPORTANTE: Gemini 2.5 Pro pode usar thinking tokens
+        // Se MAX_TOKENS foi atingido apenas no raciocínio, parts pode estar vazio
+        if (candidate.finishReason === 'MAX_TOKENS') {
+            const thoughtsCount = response.usageMetadata?.thoughtsTokenCount || 0;
+            const totalCount = response.usageMetadata?.totalTokenCount || 0;
+            console.warn('GeminiAPI | Limite de tokens atingido:', {
+                thoughtsTokens: thoughtsCount,
+                totalTokens: totalCount,
+                hasContent: !!candidate.content
+            });
+            
+            // Se o modelo usou todos os tokens para raciocínio e não gerou resposta
+            if (thoughtsCount > 0 && (!candidate.content?.parts || candidate.content.parts.length === 0)) {
+                throw new Error(`Limite de tokens atingido durante o raciocínio (${thoughtsCount} tokens). Aumente o valor de "Comprimento Máximo da Narrativa" nas configurações para pelo menos ${Math.ceil((totalCount + 2000) / 512) * 512}.`);
+            }
+        }
+        
         // Verificar estrutura da resposta
         if (!candidate.content) {
             console.error('GeminiAPI | Sem content no candidate:', candidate);

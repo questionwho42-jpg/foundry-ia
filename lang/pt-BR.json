@@ -15,7 +15,7 @@
       },
       "MaxTokens": {
         "Name": "Comprimento Máximo da Narrativa",
-        "Hint": "Número máximo de tokens (palavras) nas respostas. MÍNIMO RECOMENDADO: 2048 para narrativas curtas, 4096+ para aventuras solo ricas e NPCs detalhados."
+        "Hint": "Tokens para raciocínio + resposta. Gemini 2.5 Pro: MÍNIMO 8192 (usa ~2000 para raciocínio). Flash/Flash-8B: mínimo 2048. Valores baixos truncam a narrativa."
       },
       "ChatNotifications": {
         "Name": "Mostrar Narrativas no Chat",

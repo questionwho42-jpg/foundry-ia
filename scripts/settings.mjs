@@ -62,12 +62,16 @@ export function registerSettings() {
         type: Number,
         range: {
             min: 512,
-            max: 8192,
+            max: 16384,
             step: 512
         },
-        default: 4096,
+        default: 8192,
         onChange: value => {
-            if (value < 2048) {
+            const selectedModel = game.settings.get('ai-dungeon-master-pf2e', 'geminiModel');
+            // Gemini 2.5 Pro usa thinking tokens que contam no limite
+            if (selectedModel === 'gemini-2.5-pro' && value < 4096) {
+                ui.notifications.warn('Gemini 2.5 Pro usa tokens de raciocínio. Recomendado: 8192+ tokens');
+            } else if (value < 2048) {
                 ui.notifications.warn('Valores abaixo de 2048 podem resultar em narrativas incompletas.');
             }
         }

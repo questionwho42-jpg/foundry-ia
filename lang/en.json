@@ -15,7 +15,7 @@
       },
       "MaxTokens": {
         "Name": "Maximum Narrative Length",
-        "Hint": "Maximum number of tokens (words) in responses. MINIMUM RECOMMENDED: 2048 for short narratives, 4096+ for rich solo adventures and detailed NPCs."
+        "Hint": "Tokens for thinking + response. Gemini 2.5 Pro: MINIMUM 8192 (uses ~2000 for thinking). Flash/Flash-8B: minimum 2048. Low values truncate narratives."
       },
       "ChatNotifications": {
         "Name": "Show Narratives in Chat",
