@@ -15,7 +15,7 @@
       },
       "MaxTokens": {
         "Name": "Comprimento Máximo da Narrativa",
-        "Hint": "Número máximo de tokens nas respostas. Valores maiores permitem narrativas mais longas e detalhadas. Recomendado: 4096+ para aventuras solo."
+        "Hint": "Número máximo de tokens (palavras) nas respostas. MÍNIMO RECOMENDADO: 2048 para narrativas curtas, 4096+ para aventuras solo ricas e NPCs detalhados."
       },
       "ChatNotifications": {
         "Name": "Mostrar Narrativas no Chat",

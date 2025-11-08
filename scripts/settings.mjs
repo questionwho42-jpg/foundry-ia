@@ -61,11 +61,16 @@ export function registerSettings() {
         config: true,
         type: Number,
         range: {
-            min: 256,
+            min: 512,
             max: 8192,
-            step: 256
+            step: 512
         },
-        default: 2048
+        default: 4096,
+        onChange: value => {
+            if (value < 2048) {
+                ui.notifications.warn('Valores abaixo de 2048 podem resultar em narrativas incompletas.');
+            }
+        }
     });
     
     // Mostrar notificações de IA em chat
