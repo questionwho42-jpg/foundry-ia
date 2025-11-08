@@ -577,7 +577,7 @@ IMPLEMENTAÇÃO:
 - **Recurso:** Solo play verdadeiramente autônomo
 - **Desafios:** Executar ações via API do Foundry é complexo
 - **Alternativa 1:** Apenas sugerir ação (GM executa manualmente)
-- **Alternativa 2:** Integrar com módulo Combat Utility Belt
+- **Alternativa 2:** ~~Integrar com módulo Combat Utility Belt~~ (incompatível com Foundry v13)
 - **Alternativa 3:** Sistema simplificado (apenas ataques básicos auto)
 
 **Personalização do Prompt:**
