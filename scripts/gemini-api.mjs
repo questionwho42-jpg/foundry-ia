@@ -2,7 +2,7 @@
  * Cliente para a API do Google Gemini
  */
 export class GeminiAPI {
-    constructor(apiKey, model = 'gemini-2.5-pro-latest') {
+    constructor(apiKey, model = 'gemini-2.5-pro') {
         this.apiKey = apiKey;
         this.baseUrl = 'https://generativelanguage.googleapis.com/v1beta';
         this.model = model;

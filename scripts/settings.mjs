@@ -23,11 +23,11 @@ export function registerSettings() {
         config: true,
         type: String,
         choices: {
-            'gemini-2.5-pro-latest': 'Gemini 2.5 Pro (Recomendado - Narrativa Avançada)',
-            'gemini-2.5-flash-latest': 'Gemini 2.5 Flash (Rápido)',
-            'gemini-2.5-flash-8b-latest': 'Gemini 2.5 Flash-8B (Econômico)'
+            'gemini-2.5-pro': 'Gemini 2.5 Pro (Recomendado - Narrativa Avançada)',
+            'gemini-2.5-flash': 'Gemini 2.5 Flash (Rápido)',
+            'gemini-2.5-flash-8b': 'Gemini 2.5 Flash-8B (Econômico)'
         },
-        default: 'gemini-2.5-pro-latest'
+        default: 'gemini-2.5-pro'
     });
     
     // Temperatura da IA (criatividade)
