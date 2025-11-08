@@ -191,7 +191,7 @@ Faça o jogador SENTIR que está realmente lá.`;
     }
     
     /**
-     * Gera um NPC para aventura solo com personalidade rica
+     * Gera um NPC simples para aventura solo
      * @param {Object} npcParams - Parâmetros do NPC
      * @returns {Promise<Object>} Dados do NPC gerado
      */
@@ -204,28 +204,22 @@ Faça o jogador SENTIR que está realmente lá.`;
             personality = 'aleatória'
         } = npcParams;
         
-        const prompt = `Como Mestre da Aventura Solo, crie um NPC MEMORÁVEL e TRIDIMENSIONAL para Pathfinder 2e:
+        // Prompt MUITO simplificado para evitar thinking tokens
+        const prompt = `Crie um NPC para Pathfinder 2e:
 
-PARÂMETROS:
-- Ancestralidade: ${ancestry}
-- Nível: ${level}
-- Papel: ${role}
-- Alinhamento: ${alignment}
-- Personalidade: ${personality}
+Ancestralidade: ${ancestry}
+Nível: ${level}
+Papel: ${role}
 
-INCLUA OBRIGATORIAMENTE:
-1. **Nome** completo e apropriado
-2. **Aparência detalhada** (como o jogador vê este NPC)
-3. **Personalidade única** (maneirismos, modo de falar, quirks)
-4. **Motivação secreta** (o que realmente querem)
-5. **Background envolvente** (história pessoal interessante)
-6. **Ganchos narrativos** (3 formas de envolver este NPC na história)
-7. **Informações úteis** (o que sabem que pode ajudar o jogador)
-8. **Características mecânicas PF2e** relevantes
+Forneça APENAS:
+- Nome
+- Aparência (2 frases)
+- Personalidade (2 frases)
+- O que ele sabe/oferece (1 frase)
 
-Este NPC deve ser INESQUECÍVEL. Dê vida a eles!`;
+Seja DIRETO e CONCISO.`;
         
-        const response = await this.chat(prompt, { resetHistory: true, temperature: 0.9 });
+        const response = await this.chat(prompt, { resetHistory: true, temperature: 0.7 });
         
         return {
             description: response,
