@@ -322,11 +322,36 @@ export class AIDungeonMasterApp extends Application {
                 this.gemini = new GeminiAPI(apiKey, model);
             }
             
+            ui.notifications.info('Gerando NPC...');
             const npc = await this.gemini.generateNPC(params);
+            
+            // Extrair nome do NPC da resposta
+            const nameMatch = npc.description.match(/\*\*Nome:\*\*\s*([^\n]+)/i);
+            const npcName = nameMatch ? nameMatch[1].trim() : 'NPC Gerado pela IA';
+            
+            // Criar ator NPC no Foundry
+            const actor = await Actor.create({
+                name: npcName,
+                type: 'npc',
+                img: 'icons/svg/mystery-man.svg',
+                system: {
+                    details: {
+                        level: { value: params.level || 1 },
+                        publicNotes: npc.description
+                    }
+                }
+            });
+            
+            if (actor) {
+                ui.notifications.success(`NPC "${npcName}" criado com sucesso!`);
+                
+                // Abrir ficha do NPC
+                actor.sheet.render(true);
+            }
             
             this.conversationHistory.push({
                 role: 'assistant',
-                content: `**NPC Gerado**\n\n${npc.description}`,
+                content: `**NPC Criado: ${npcName}**\n\n${npc.description}`,
                 timestamp: new Date()
             });
             
