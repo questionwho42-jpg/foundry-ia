@@ -355,6 +355,15 @@ export class AIDungeonMasterApp extends Application {
         this.gemini = new GeminiAPI(apiKey, model);
       }
 
+      // Salvar referência do ator do jogador ANTES de gerar a cena
+      const playerToken = canvas.tokens?.controlled[0];
+      const playerActor = playerToken?.actor;
+      
+      if (!playerActor) {
+        ui.notifications.warn('Nenhum token selecionado. Selecione seu personagem antes de gerar a cena.');
+        return;
+      }
+
       ui.notifications.info("Gerando cena de combate... Aguarde.");
       const sceneData = await this.gemini.generateCombatScene(params);
 
@@ -463,15 +472,14 @@ export class AIDungeonMasterApp extends Application {
         }
       }
 
-      // Adicionar token do jogador
-      const playerToken = canvas.tokens?.controlled[0];
-      if (playerToken && playerToken.actor) {
+      // Adicionar token do jogador usando a referência salva
+      if (playerActor) {
         const playerStartX = sceneData.playerStart.x * gridSize;
         const playerStartY = sceneData.playerStart.y * gridSize;
-        
+
         await scene.createEmbeddedDocuments("Token", [{
-          name: playerToken.actor.name,
-          actorId: playerToken.actor.id,
+          name: playerActor.name,
+          actorId: playerActor.id,
           actorLink: true,  // Linkar ao ator original
           x: playerStartX,
           y: playerStartY,
@@ -479,10 +487,8 @@ export class AIDungeonMasterApp extends Application {
           hidden: false,
           vision: true
         }]);
-        
-        ui.notifications.info(`Token de ${playerToken.actor.name} adicionado à cena!`);
-      } else {
-        ui.notifications.warn('Nenhum token selecionado. Selecione seu personagem antes de gerar a cena.');
+
+        ui.notifications.info(`Token de ${playerActor.name} adicionado à cena!`);
       }
 
       // Desenhar objetos decorativos
