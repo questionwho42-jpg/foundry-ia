@@ -38,6 +38,16 @@ Hooks.once("ready", function () {
     console.log(
       "AI Dungeon Master | GM detectado, funcionalidades completas habilitadas"
     );
+    
+    // Inicializar sistema de Combat AI
+    const geminiAPI = new GeminiAPI(apiKey);
+    const combatAI = new CombatAI(geminiAPI);
+    combatAI.initialize();
+    
+    // Tornar acessível globalmente
+    game.combatAI = combatAI;
+    
+    console.log('AI Dungeon Master | Sistema de IA Tática inicializado');
   }
 });
 
