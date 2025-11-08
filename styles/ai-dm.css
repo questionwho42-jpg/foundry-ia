@@ -170,21 +170,22 @@
 /* Input de chat */
 .chat-input-container {
     display: flex;
+    flex-direction: column;
     gap: 10px;
-    align-items: flex-end;
     margin-top: 10px;
 }
 
 #message-input {
-    flex: 1;
+    width: 100%;
     border: 1px solid #ddd;
     border-radius: 4px;
     padding: 12px;
     font-family: inherit;
     font-size: 14px;
     resize: vertical;
-    min-height: 80px;
-    max-height: 200px;
+    min-height: 100px;
+    max-height: 250px;
+    box-sizing: border-box;
 }
 
 #message-input:focus {
@@ -204,10 +205,11 @@
     font-size: 14px;
     transition: background 0.2s;
     white-space: nowrap;
-    min-height: 80px;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
+    width: 100%;
 }
 
 .send-btn:hover {
