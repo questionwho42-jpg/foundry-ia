@@ -1,29 +1,57 @@
-# AI Dungeon Master for Pathfinder 2e
+# AI Solo Adventure Narrator for Pathfinder 2e
 
-Um módulo completo para Foundry Virtual Tabletop que funciona como um assistente de Dungeon Master alimentado por IA, usando a API do Google Gemini e especializado no sistema Pathfinder 2e.
+🎭 **Narrador de Aventuras Solo com IA** - Um módulo completo para Foundry Virtual Tabletop que transforma suas sessões individuais de Pathfinder 2e em aventuras narrativas imersivas usando o **Google Gemini 2.5 Pro**.
 
 ![Foundry VTT](https://img.shields.io/badge/Foundry-v11%20%7C%20v12-orange)
 ![Sistema](https://img.shields.io/badge/Sistema-Pathfinder%202e-blue)
+![Gemini](https://img.shields.io/badge/Gemini-2.5%20Pro-purple)
 ![Licença](https://img.shields.io/badge/Licen%C3%A7a-MIT-green)
 
-## 🎲 Funcionalidades
+## 🎲 O Que É?
 
-### Chat Interativo com IA
-- Converse com uma IA especializada em Pathfinder 2e
-- Contexto automático do jogo (cena atual, tokens selecionados, etc.)
-- Histórico de conversação mantido durante a sessão
-- Comandos de chat rápidos (`/aidm` e `/dm`)
+Este módulo é o **mestre perfeito para aventuras solo**. Usando o modelo mais avançado do Google Gemini (2.5 Pro), ele narra histórias completas, interpreta NPCs, descreve cenários vívidos e responde às suas ações em tempo real. É como ter um DM pessoal disponível 24/7!
 
-### Geração de Conteúdo
-- **Descrições de Cenas**: Gera descrições narrativas ricas e imersivas para suas cenas
-- **Criação de NPCs**: Gera NPCs completos com background, personalidade e características mecânicas
-- **Ajuda com Regras**: Explica regras do Pathfinder 2e de forma clara e com exemplos
+## ✨ Funcionalidades Principais
 
-### Integração com Foundry
-- Botão de controle de cena para acesso rápido
-- Interface intuitiva com múltiplas abas
-- Suporte completo a localização (Português e Inglês)
-- Configurações flexíveis por mundo
+### 🎭 Narração Imersiva
+- **Narrativa em segunda pessoa** ("você vê", "você sente")
+- **Descrições sensoriais ricas** - visão, som, cheiro, tato
+- **Estilo adaptativo** - terror, fantasia, mistério, aventura
+- **Contexto persistente** - a IA lembra de tudo que aconteceu
+
+### 🎬 Sistema de Aventuras
+- **Início personalizado** - escolha tema e cenário inicial
+- **6 temas prontos** - fantasia medieval, terror gótico, investigação urbana, exploração de masmorras, mistério e pirataria
+- **Progressão natural** - a história evolui baseada nas suas escolhas
+- **Sem trilhos** - total liberdade narrativa
+
+### 👥 NPCs Vivos
+- **Personalidades únicas** - cada NPC tem voz própria
+- **Motivações secretas** - descubra o que realmente querem
+- **Backgrounds ricos** - histórias pessoais interessantes
+- **Ganchos narrativos** - múltiplas formas de envolvimento
+
+### 🗺️ Descrição de Cenários
+- **Atmosfera detalhada** - cada local tem sua personalidade
+- **Detalhes interativos** - elementos que convidam à exploração
+- **Tensão construída** - ritmo narrativo apropriado
+
+## 🚀 Modelos Disponíveis
+
+### Gemini 2.5 Pro (Recomendado) ⭐
+- **Melhor para**: Narrativas complexas e imersivas
+- **Força**: Raciocínio avançado, contexto longo (1M tokens)
+- **Ideal para**: Aventuras solo com múltiplas sessões
+
+### Gemini 2.5 Flash
+- **Melhor para**: Sessões rápidas
+- **Força**: Velocidade e eficiência
+- **Ideal para**: One-shots e exploração casual
+
+### Gemini 2.5 Flash-Lite
+- **Melhor para**: Uso econômico
+- **Força**: Custo-benefício
+- **Ideal para**: Testes e uso frequente
 
 ## 📦 Instalação
 
@@ -71,36 +99,57 @@ https://raw.githubusercontent.com/questionwho42-jpg/foundry-ia/main/module.json
 
 ## 🎮 Como Usar
 
-### Interface Principal
+### 1️⃣ Primeira Aventura
 
-1. **Para GM**: Clique no botão com ícone de robô nos controles de cena
-2. **Via Chat**: Digite `/dm` ou `/aidm` no chat
+1. **Selecione seu personagem** (token no mapa)
+2. **Clique no botão do livro** nos controles de cena
+3. **Escolha "Iniciar Aventura"**
+4. **Selecione**:
+   - Tema da aventura (fantasia, terror, mistério, etc.)
+   - Cenário inicial (taverna, floresta, cidade, etc.)
+5. **A história começa!**
 
-### Abas da Interface
+### 2️⃣ Durante a Aventura
 
-#### 💬 Chat
-- Digite perguntas ou solicitações para a IA
-- Receba respostas contextualizadas ao seu jogo
-- Histórico completo da conversa
+**Você faz**: Digite suas ações no chat
+```
+Examino o mapa antigo na parede
+Converso com o taberneiro sobre rumores
+Saio pela porta dos fundos silenciosamente
+```
 
-#### 🛠️ Ferramentas
-- **Descrever Cena**: Gera descrição narrativa da cena ativa
-- **Gerar NPC**: Cria um NPC completo com customização
-- **Ajuda com Regras**: Explica mecânicas do PF2e
-- **Limpar Conversa**: Reset do histórico
+**A IA responde**: 
+- Descreve o resultado das suas ações
+- Narra as consequências
+- Apresenta novos desafios
+- Oferece escolhas
 
-#### ℹ️ Info
-- Informações sobre o módulo
-- Contexto atual do jogo
-- Lista de recursos disponíveis
-
-### Comandos de Chat
+### 3️⃣ Comandos Rápidos
 
 ```
-/aidm Como funciona o sistema de três ações?
-/aidm Descreva um taverna medieval sombria
-/dm (abre a interface)
+/aidm [sua ação]    - Ação rápida no chat
+/dm                 - Abre a interface completa
 ```
+
+## 🎨 Temas de Aventura
+
+### 🏰 Fantasia Medieval
+Reinos clássicos, dragões, magia e cavalaria
+
+### 🦇 Terror Gótico  
+Mansões assombradas, vampiros e mistérios sombrios
+
+### 🔍 Investigação Urbana
+Crimes, conspirações e intrigas políticas
+
+### ⚔️ Exploração de Masmorras
+Ruínas antigas, armadilhas e tesouros perdidos
+
+### 🎭 Mistério e Intriga
+Segredos, traições e reviravoltas inesperadas
+
+### ⚓ Alto Mar e Pirataria
+Navios piratas, ilhas perdidas e aventuras marítimas
 
 ## 🔧 Configurações Avançadas
 
