@@ -260,49 +260,84 @@ Cite a regra oficial quando possível e forneça exemplos práticos.`;
             difficulty = 'moderado'
         } = sceneParams;
         
-        const prompt = `Gere dados para cena de combate em Pathfinder 2e (aventura SOLO):
-
+        // Simplificado: usar estrutura fixa e só pedir nomes/descrição
+        const prompt = `Cena de combate para Pathfinder 2e:
 Local: ${locationType}
-Nível do Jogador: ${playerLevel}
-Número de Inimigos: ${enemyCount}
-Dificuldade: ${difficulty}
+Inimigos: ${enemyCount}
 
-Retorne APENAS um JSON válido (sem markdown, sem explicações) com esta estrutura EXATA:
-{
-  "sceneName": "nome curto da cena",
-  "description": "1-2 frases descrevendo o local",
-  "gridSize": tamanho em quadrados (ex: 30),
-  "rooms": [
-    {"x1": 0, "y1": 0, "x2": 20, "y2": 15, "name": "sala principal"}
-  ],
-  "walls": [
-    {"x1": 0, "y1": 0, "x2": 2000, "y2": 0}
-  ],
-  "lights": [
-    {"x": 500, "y": 500, "bright": 20, "dim": 40, "color": "#ff9329"}
-  ],
-  "playerStart": {"x": 10, "y": 12},
-  "enemies": [
-    {"name": "Goblin", "level": ${Math.max(playerLevel - 1, -1)}, "x": 5, "y": 5}
-  ]
-}
+Forneça APENAS:
+1. Nome da cena (curto)
+2. Descrição (1 frase)
+3. Nome de ${enemyCount} inimigos apropriados para ${locationType}
 
-IMPORTANTE: Responda APENAS o JSON, nada mais.`;
+Exemplo:
+Nome: Taverna Sombria
+Descrição: Mobília quebrada e cheiro de cerveja.
+Inimigos: Bandido, Capanga`;
         
-        const response = await this.chat(prompt, { resetHistory: true, temperature: 0.5 });
+        const response = await this.chat(prompt, { resetHistory: true, temperature: 0.6 });
         
-        // Extrair JSON da resposta (remover possíveis markdown code blocks)
-        let jsonStr = response.trim();
-        if (jsonStr.startsWith('```')) {
-            jsonStr = jsonStr.replace(/```json\n?/g, '').replace(/```\n?/g, '');
-        }
+        // Extrair informações da resposta
+        const nameMatch = response.match(/Nome:\s*(.+)/i);
+        const descMatch = response.match(/Descrição:\s*(.+)/i);
+        const enemiesMatch = response.match(/Inimigos?:\s*(.+)/i);
         
-        try {
-            return JSON.parse(jsonStr);
-        } catch (error) {
-            console.error('Erro ao parsear JSON da cena:', error);
-            throw new Error('IA retornou formato inválido. Tente novamente.');
-        }
+        const sceneName = nameMatch ? nameMatch[1].trim() : `${locationType} de Combate`;
+        const description = descMatch ? descMatch[1].trim() : `Uma ${locationType} pronta para combate.`;
+        const enemyNames = enemiesMatch 
+            ? enemiesMatch[1].split(',').map(e => e.trim()).slice(0, enemyCount)
+            : Array(enemyCount).fill('Inimigo');
+        
+        // Gerar estrutura baseada no tipo de local
+        const gridSize = 30;
+        const enemyLevel = Math.max(playerLevel - 1, -1);
+        
+        // Layout simples: sala retangular
+        const roomWidth = 20;
+        const roomHeight = 15;
+        const pixelWidth = roomWidth * 100;
+        const pixelHeight = roomHeight * 100;
+        
+        // Paredes formando retângulo
+        const walls = [
+            { x1: 0, y1: 0, x2: pixelWidth, y2: 0 },           // Norte
+            { x1: pixelWidth, y1: 0, x2: pixelWidth, y2: pixelHeight },   // Leste
+            { x1: 0, y1: pixelHeight, x2: pixelWidth, y2: pixelHeight },  // Sul
+            { x1: 0, y1: 0, x2: 0, y2: pixelHeight }            // Oeste
+        ];
+        
+        // Luzes nos cantos
+        const lights = [
+            { x: 300, y: 300, bright: 20, dim: 40, color: '#ff9329' },
+            { x: pixelWidth - 300, y: 300, bright: 20, dim: 40, color: '#ff9329' },
+            { x: 300, y: pixelHeight - 300, bright: 20, dim: 40, color: '#ff9329' },
+            { x: pixelWidth - 300, y: pixelHeight - 300, bright: 20, dim: 40, color: '#ff9329' }
+        ];
+        
+        // Distribuir inimigos pela sala
+        const enemies = enemyNames.map((name, i) => {
+            const angle = (i / enemyCount) * Math.PI * 2;
+            const radius = 5;
+            const centerX = roomWidth / 2;
+            const centerY = roomHeight / 2;
+            
+            return {
+                name: name,
+                level: enemyLevel,
+                x: Math.floor(centerX + Math.cos(angle) * radius),
+                y: Math.floor(centerY + Math.sin(angle) * radius)
+            };
+        });
+        
+        return {
+            sceneName,
+            description,
+            gridSize,
+            walls,
+            lights,
+            playerStart: { x: roomWidth / 2, y: roomHeight - 2 },
+            enemies
+        };
     }
     
     /**
