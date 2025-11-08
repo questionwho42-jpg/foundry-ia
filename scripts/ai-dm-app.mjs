@@ -500,21 +500,41 @@ export class AIDungeonMasterApp extends Application {
 
       // Adicionar token do jogador usando a referência salva
       if (playerActor) {
-        const playerStartX = sceneData.playerStart.x * gridSize;
-        const playerStartY = sceneData.playerStart.y * gridSize;
+        try {
+          const playerStartX = sceneData.playerStart.x * gridSize;
+          const playerStartY = sceneData.playerStart.y * gridSize;
 
-        await scene.createEmbeddedDocuments("Token", [{
-          name: playerActor.name,
-          actorId: playerActor.id,
-          actorLink: true,  // Linkar ao ator original
-          x: playerStartX,
-          y: playerStartY,
-          disposition: 1,  // Amigável
-          hidden: false,
-          vision: true
-        }]);
+          console.log(`AI DM | Adicionando token do jogador:`, {
+            name: playerActor.name,
+            actorId: playerActor.id,
+            x: playerStartX,
+            y: playerStartY,
+            sceneId: scene.id
+          });
 
-        ui.notifications.info(`Token de ${playerActor.name} adicionado à cena!`);
+          const tokenData = [{
+            name: playerActor.name,
+            actorId: playerActor.id,
+            actorLink: true,  // Linkar ao ator original
+            x: playerStartX,
+            y: playerStartY,
+            disposition: 1,  // Amigável
+            hidden: false,
+            vision: true,
+            sight: {
+              enabled: true,
+              range: 60
+            }
+          }];
+
+          const createdTokens = await scene.createEmbeddedDocuments("Token", tokenData);
+          console.log(`AI DM | Token criado com sucesso:`, createdTokens);
+          
+          ui.notifications.info(`Token de ${playerActor.name} adicionado à cena!`);
+        } catch (error) {
+          console.error(`AI DM | Erro ao adicionar token do jogador:`, error);
+          ui.notifications.error(`Erro ao adicionar token: ${error.message}`);
+        }
       }
 
       // Desenhar objetos decorativos
@@ -543,8 +563,13 @@ export class AIDungeonMasterApp extends Application {
         ui.notifications.info(`${sceneData.objects.length} objetos adicionados à cena!`);
       }
 
-      // Ativar a cena
-      await scene.view();
+      // Ativar e visualizar a cena
+      console.log(`AI DM | Ativando cena: ${scene.name} (ID: ${scene.id})`);
+      await scene.activate();  // Definir como cena ativa
+      await scene.view();      // Abrir visualização da cena
+      
+      // Aguardar canvas carregar
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       ui.notifications.success(
         `Cena "${sceneData.sceneName}" criada com sucesso!`
