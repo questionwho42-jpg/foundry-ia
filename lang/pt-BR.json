@@ -1,0 +1,30 @@
+{
+  "AIDM": {
+    "Settings": {
+      "ApiKey": {
+        "Name": "Chave API do Google Gemini",
+        "Hint": "Sua chave API do Google AI Studio (https://ai.google.dev/). Necessária para usar as funcionalidades do AI Dungeon Master."
+      },
+      "Model": {
+        "Name": "Modelo do Gemini",
+        "Hint": "Qual modelo do Gemini usar. Flash é mais rápido e econômico, Pro é mais capaz."
+      },
+      "Temperature": {
+        "Name": "Criatividade da IA (Temperatura)",
+        "Hint": "Controla a aleatoriedade nas respostas. Valores mais baixos (0.3) são mais focados e determinísticos, valores mais altos (1.5) são mais criativos e variados."
+      },
+      "MaxTokens": {
+        "Name": "Comprimento Máximo da Resposta",
+        "Hint": "Número máximo de tokens (aproximadamente palavras) nas respostas da IA. Valores maiores permitem respostas mais longas mas custam mais."
+      },
+      "ChatNotifications": {
+        "Name": "Mostrar Notificações no Chat",
+        "Hint": "Exibir respostas da IA como mensagens de chat na janela principal de chat."
+      },
+      "PlayerCommands": {
+        "Name": "Permitir Comandos de Jogadores",
+        "Hint": "Permitir que jogadores (não-GMs) usem os comandos /aidm e /dm no chat. GM sempre tem acesso."
+      }
+    }
+  }
+}

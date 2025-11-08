@@ -1,0 +1,34 @@
+# Ignorar dependências do Node (se houver)
+node_modules/
+package-lock.json
+
+# Ignorar arquivos de build
+dist/
+*.js.map
+
+# Ignorar arquivos do sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Ignorar arquivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Ignorar logs
+*.log
+npm-debug.log*
+
+# Ignorar arquivos temporários
+.tmp/
+temp/
+*.tmp
+
+# Ignorar chaves de API (segurança)
+.env
+.env.local
+api-keys.txt
+secrets.json

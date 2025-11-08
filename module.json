@@ -1,0 +1,52 @@
+{
+  "id": "ai-dungeon-master-pf2e",
+  "title": "AI Dungeon Master for PF2e",
+  "description": "Um assistente de Dungeon Master alimentado por IA usando Google Gemini, especializado em Pathfinder 2e. Oferece suporte narrativo, geração de NPCs, descrições de cenas e assistência com regras.",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "11",
+    "verified": "12",
+    "maximum": "12"
+  },
+  "authors": [
+    {
+      "name": "questionwho42",
+      "url": "https://github.com/questionwho42-jpg"
+    }
+  ],
+  "esmodules": [
+    "scripts/main.mjs"
+  ],
+  "styles": [
+    "styles/ai-dm.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    },
+    {
+      "lang": "pt-BR",
+      "name": "Português (Brasil)",
+      "path": "lang/pt-BR.json"
+    }
+  ],
+  "relationships": {
+    "systems": [
+      {
+        "id": "pf2e",
+        "type": "system",
+        "compatibility": {
+          "verified": "5.0"
+        }
+      }
+    ]
+  },
+  "url": "https://github.com/questionwho42-jpg/foundry-ia",
+  "manifest": "https://raw.githubusercontent.com/questionwho42-jpg/foundry-ia/main/module.json",
+  "download": "https://github.com/questionwho42-jpg/foundry-ia/archive/refs/heads/main.zip",
+  "license": "LICENSE",
+  "readme": "README.md",
+  "bugs": "https://github.com/questionwho42-jpg/foundry-ia/issues"
+}

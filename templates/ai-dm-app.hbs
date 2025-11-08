@@ -1,0 +1,137 @@
+<div class="ai-dm-container">
+    <!-- Abas de navegação -->
+    <nav class="tabs" data-group="primary-tabs">
+        <a class="item" data-tab="chat">
+            <i class="fas fa-comments"></i> Chat
+        </a>
+        <a class="item" data-tab="tools">
+            <i class="fas fa-magic"></i> Ferramentas
+        </a>
+        <a class="item" data-tab="info">
+            <i class="fas fa-info-circle"></i> Info
+        </a>
+    </nav>
+
+    <!-- Conteúdo das abas -->
+    <section class="content">
+        <!-- Aba Chat -->
+        <div class="tab" data-tab="chat" data-group="primary-tabs">
+            {{#unless hasApiKey}}
+            <div class="warning-banner">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Configure sua chave API do Google Gemini nas configurações do módulo!</p>
+            </div>
+            {{/unless}}
+            
+            <div class="chat-container">
+                <div class="chat-content">
+                    {{#if conversationHistory}}
+                        {{#each conversationHistory}}
+                        <div class="message {{role}}">
+                            <div class="message-header">
+                                {{#if (eq role "user")}}
+                                    <i class="fas fa-user"></i> Você
+                                {{else}}
+                                    <i class="fas fa-robot"></i> AI Dungeon Master
+                                {{/if}}
+                                <span class="timestamp">{{timestamp}}</span>
+                            </div>
+                            <div class="message-content">
+                                {{content}}
+                            </div>
+                        </div>
+                        {{/each}}
+                    {{else}}
+                    <div class="empty-chat">
+                        <i class="fas fa-robot fa-3x"></i>
+                        <p>Olá! Sou seu assistente AI Dungeon Master.</p>
+                        <p>Como posso ajudar na sua aventura de Pathfinder 2e?</p>
+                    </div>
+                    {{/if}}
+                </div>
+                
+                <div class="chat-input-container">
+                    <textarea id="message-input" placeholder="Digite sua mensagem ou pergunta..." rows="3"></textarea>
+                    <button id="send-message" class="send-btn">
+                        <i class="fas fa-paper-plane"></i> Enviar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aba Ferramentas -->
+        <div class="tab" data-tab="tools" data-group="primary-tabs">
+            <div class="tools-grid">
+                <button id="describe-scene" class="tool-btn">
+                    <i class="fas fa-image"></i>
+                    <span>Descrever Cena</span>
+                    <small>Gera descrição narrativa da cena atual</small>
+                </button>
+                
+                <button id="generate-npc" class="tool-btn">
+                    <i class="fas fa-users"></i>
+                    <span>Gerar NPC</span>
+                    <small>Cria um NPC completo com background</small>
+                </button>
+                
+                <button id="rule-help" class="tool-btn">
+                    <i class="fas fa-book"></i>
+                    <span>Ajuda com Regras</span>
+                    <small>Explica regras do Pathfinder 2e</small>
+                </button>
+                
+                <button id="clear-chat" class="tool-btn danger">
+                    <i class="fas fa-trash"></i>
+                    <span>Limpar Conversa</span>
+                    <small>Remove todo o histórico de chat</small>
+                </button>
+            </div>
+            
+            <div class="quick-commands">
+                <h3>Comandos de Chat Rápidos</h3>
+                <ul>
+                    <li><code>/aidm [mensagem]</code> - Envia mensagem para a IA no chat</li>
+                    <li><code>/dm</code> - Abre esta janela</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Aba Info -->
+        <div class="tab" data-tab="info" data-group="primary-tabs">
+            <div class="info-content">
+                <h2>AI Dungeon Master para PF2e</h2>
+                <p>Um assistente inteligente para mestres de RPG usando Google Gemini.</p>
+                
+                <h3>Contexto Atual</h3>
+                <div class="context-info">
+                    <p><strong>Cena Ativa:</strong> {{activeScene}}</p>
+                    <p><strong>Tokens Selecionados:</strong></p>
+                    {{#if selectedTokens}}
+                    <ul>
+                        {{#each selectedTokens}}
+                        <li>{{name}}</li>
+                        {{/each}}
+                    </ul>
+                    {{else}}
+                    <p class="muted">Nenhum token selecionado</p>
+                    {{/if}}
+                </div>
+                
+                <h3>Recursos</h3>
+                <ul>
+                    <li>Chat interativo com IA especializada em PF2e</li>
+                    <li>Geração de descrições narrativas</li>
+                    <li>Criação de NPCs completos</li>
+                    <li>Assistência com regras do jogo</li>
+                    <li>Integração com cenas e tokens</li>
+                </ul>
+                
+                <h3>Configuração</h3>
+                <p>Configure sua chave API do Google Gemini em:<br>
+                <strong>Configurações do Módulo > AI Dungeon Master for PF2e</strong></p>
+                
+                <p class="muted">Obtenha sua chave em: <a href="https://ai.google.dev/" target="_blank">https://ai.google.dev/</a></p>
+            </div>
+        </div>
+    </section>
+</div>
