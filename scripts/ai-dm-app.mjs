@@ -504,6 +504,14 @@ export class AIDungeonMasterApp extends Application {
           const playerStartX = sceneData.playerStart.x * gridSize;
           const playerStartY = sceneData.playerStart.y * gridSize;
 
+          console.log(`AI DM | DEBUG Scene Info:`, {
+            gridSize: sceneData.gridSize,
+            roomDimensions: `${sceneData.gridSize}x${sceneData.gridSize}`,
+            playerStartGrid: sceneData.playerStart,
+            playerStartPixels: { x: playerStartX, y: playerStartY },
+            sceneSize: { width: sceneWidth, height: sceneHeight }
+          });
+
           console.log(`AI DM | Adicionando token do jogador:`, {
             name: playerActor.name,
             actorId: playerActor.id,
@@ -518,6 +526,8 @@ export class AIDungeonMasterApp extends Application {
             actorLink: true,  // Linkar ao ator original
             x: playerStartX,
             y: playerStartY,
+            width: 1,  // Tamanho do token em grid units
+            height: 1,
             disposition: 1,  // Amigável
             hidden: false,
             vision: true,
@@ -569,7 +579,20 @@ export class AIDungeonMasterApp extends Application {
       await scene.view();      // Abrir visualização da cena
       
       // Aguardar canvas carregar
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Centralizar câmera na posição do jogador
+      const playerStartX = sceneData.playerStart.x * gridSize;
+      const playerStartY = sceneData.playerStart.y * gridSize;
+      
+      console.log(`AI DM | Centralizando câmera em: x=${playerStartX}, y=${playerStartY}`);
+      
+      await canvas.animatePan({
+        x: playerStartX,
+        y: playerStartY,
+        scale: 1,
+        duration: 500
+      });
 
       ui.notifications.success(
         `Cena "${sceneData.sceneName}" criada com sucesso!`
