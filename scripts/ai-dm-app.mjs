@@ -11,6 +11,17 @@ export class AIDungeonMasterApp extends Application {
     this.conversationHistory = [];
     this.adventureStarted = false;
     this.characterInfo = null;
+    
+    // Adicionar hooks para atualizar quando cena/tokens mudarem
+    this._hookIds = [];
+  }
+  
+  /** @override */
+  async close(options) {
+    // Remover hooks quando fechar
+    this._hookIds.forEach(id => Hooks.off(id));
+    this._hookIds = [];
+    return super.close(options);
   }
 
   static get defaultOptions() {
@@ -33,13 +44,13 @@ export class AIDungeonMasterApp extends Application {
   }
 
   getData() {
+    const controlled = canvas.tokens?.controlled || [];
     return {
       conversationHistory: this.conversationHistory,
       hasApiKey: !!game.settings.get("ai-dungeon-master-pf2e", "geminiApiKey"),
       activeScene: canvas.scene?.name || "Nenhuma",
-      selectedToken: canvas.tokens?.controlled[0],
-      character:
-        canvas.tokens?.controlled[0]?.name || "Sem personagem selecionado",
+      selectedTokens: controlled.map(t => ({ name: t.name })),
+      character: controlled[0]?.name || "Sem personagem selecionado",
       adventureStarted: this.adventureStarted,
     };
   }
@@ -69,6 +80,21 @@ export class AIDungeonMasterApp extends Application {
 
     // Auto-scroll para o final do chat
     this._scrollToBottom(html);
+    
+    // Adicionar hooks para re-renderizar quando contexto mudar
+    // Remover hooks antigos primeiro
+    this._hookIds.forEach(id => Hooks.off(id));
+    this._hookIds = [];
+    
+    // Hook quando a cena muda
+    this._hookIds.push(Hooks.on('canvasReady', () => {
+      this.render(false);
+    }));
+    
+    // Hook quando tokens são selecionados/desselecionados
+    this._hookIds.push(Hooks.on('controlToken', () => {
+      this.render(false);
+    }));
   }
 
   /**
