@@ -229,7 +229,8 @@ export class AIDungeonMasterApp extends Application {
         
         try {
             if (!this.gemini) {
-                this.gemini = new GeminiAPI(apiKey);
+                const model = game.settings.get('ai-dungeon-master-pf2e', 'geminiModel');
+                this.gemini = new GeminiAPI(apiKey, model);
             }
             
             const sceneData = {
@@ -317,7 +318,8 @@ export class AIDungeonMasterApp extends Application {
         
         try {
             if (!this.gemini) {
-                this.gemini = new GeminiAPI(apiKey);
+                const model = game.settings.get('ai-dungeon-master-pf2e', 'geminiModel');
+                this.gemini = new GeminiAPI(apiKey, model);
             }
             
             const npc = await this.gemini.generateNPC(params);
@@ -378,7 +380,8 @@ export class AIDungeonMasterApp extends Application {
         
         try {
             if (!this.gemini) {
-                this.gemini = new GeminiAPI(apiKey);
+                const model = game.settings.get('ai-dungeon-master-pf2e', 'geminiModel');
+                this.gemini = new GeminiAPI(apiKey, model);
             }
             
             const help = await this.gemini.getRuleHelp(query);
