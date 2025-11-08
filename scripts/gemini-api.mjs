@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Cliente para a API do Google Gemini
  */
 export class GeminiAPI {
@@ -12,9 +12,9 @@ export class GeminiAPI {
     this.lastRequestTime = 0;
     this.requestCount = 0;
     this.rateLimits = {
-      "gemini-2.5-pro": { rpm: 2, delay: 30000 }, // 2 req/min = 30s entre requisições
-      "gemini-2.5-flash": { rpm: 10, delay: 6000 }, // 10 req/min = 6s entre requisições
-      "gemini-2.5-flash-8b": { rpm: 15, delay: 4000 }, // 15 req/min = 4s entre requisições
+      "gemini-2.5-pro": { rpm: 2, delay: 30000 }, // 2 req/min = 30s entre requisiÃ§Ãµes
+      "gemini-2.5-flash": { rpm: 10, delay: 6000 }, // 10 req/min = 6s entre requisiÃ§Ãµes
+      "gemini-2.5-flash-8b": { rpm: 15, delay: 4000 }, // 15 req/min = 4s entre requisiÃ§Ãµes
     };
   }
 
@@ -32,7 +32,7 @@ export class GeminiAPI {
       const waitSeconds = Math.ceil(waitTime / 1000);
 
       ui.notifications.warn(
-        `Aguarde ${waitSeconds}s para evitar exceder o limite da API (${limit.rpm} requisições/min)`,
+        `Aguarde ${waitSeconds}s para evitar exceder o limite da API (${limit.rpm} requisiÃ§Ãµes/min)`,
         { permanent: false }
       );
 
@@ -43,9 +43,9 @@ export class GeminiAPI {
   }
 
   /**
-   * Envia uma mensagem para o Gemini e obtém resposta
-   * @param {string} message - Mensagem do usuário
-   * @param {Object} options - Opções adicionais
+   * Envia uma mensagem para o Gemini e obtÃ©m resposta
+   * @param {string} message - Mensagem do usuÃ¡rio
+   * @param {Object} options - OpÃ§Ãµes adicionais
    * @returns {Promise<string>} Resposta da IA
    */
   async chat(message, options = {}) {
@@ -77,7 +77,7 @@ export class GeminiAPI {
       });
     }
 
-    // Adicionar mensagem do usuário
+    // Adicionar mensagem do usuÃ¡rio
     this.conversationHistory.push({
       role: "user",
       parts: [{ text: message }],
@@ -96,7 +96,7 @@ export class GeminiAPI {
 
       const responseText = this.extractTextFromResponse(response);
 
-      // Adicionar resposta ao histórico
+      // Adicionar resposta ao histÃ³rico
       this.conversationHistory.push({
         role: "model",
         parts: [{ text: responseText }],
@@ -104,15 +104,15 @@ export class GeminiAPI {
 
       return responseText;
     } catch (error) {
-      console.error("GeminiAPI | Erro ao gerar conteúdo:", error);
-      throw new Error(`Falha na comunicação com Gemini: ${error.message}`);
+      console.error("GeminiAPI | Erro ao gerar conteÃºdo:", error);
+      throw new Error(`Falha na comunicaÃ§Ã£o com Gemini: ${error.message}`);
     }
   }
 
   /**
    * Inicia uma aventura solo narrativa
-   * @param {Object} adventureParams - Parâmetros da aventura
-   * @returns {Promise<string>} Introdução narrativa
+   * @param {Object} adventureParams - ParÃ¢metros da aventura
+   * @returns {Promise<string>} IntroduÃ§Ã£o narrativa
    */
   async startSoloAdventure(adventureParams) {
     const {
@@ -123,46 +123,46 @@ export class GeminiAPI {
       setting = "uma taverna",
     } = adventureParams;
 
-    const prompt = `Você é um Mestre de Aventuras Solo expert em Pathfinder 2e. Sua função é narrar uma história interativa e envolvente para UM único jogador.
+    const prompt = `VocÃª Ã© um Mestre de Aventuras Solo expert em Pathfinder 2e. Sua funÃ§Ã£o Ã© narrar uma histÃ³ria interativa e envolvente para UM Ãºnico jogador.
 
 PERSONAGEM DO JOGADOR:
 - Nome: ${characterName}
 - Classe: ${characterClass}
-- Nível: ${characterLevel}
+- NÃ­vel: ${characterLevel}
 
-CONFIGURAÇÃO DA AVENTURA:
+CONFIGURAÃ‡ÃƒO DA AVENTURA:
 - Tema: ${theme}
-- Cenário inicial: ${setting}
+- CenÃ¡rio inicial: ${setting}
 
-INSTRUÇÕES IMPORTANTES:
-1. Narre em segunda pessoa ("você vê", "você sente")
+INSTRUÃ‡Ã•ES IMPORTANTES:
+1. Narre em segunda pessoa ("vocÃª vÃª", "vocÃª sente")
 2. Seja descritivo e imersivo - use todos os sentidos
 3. Apresente escolhas significativas ao jogador
 4. Gerencie NPCs com personalidades distintas
-5. Crie tensão e mistério gradualmente
+5. Crie tensÃ£o e mistÃ©rio gradualmente
 6. Mantenha o ritmo apropriado para aventuras solo
-7. Use as regras do Pathfinder 2e quando necessário
-8. Sempre termine com opções ou uma pergunta para o jogador
+7. Use as regras do Pathfinder 2e quando necessÃ¡rio
+8. Sempre termine com opÃ§Ãµes ou uma pergunta para o jogador
 
-Inicie a aventura com uma cena envolvente que capture a atenção do jogador imediatamente. Estabeleça o ambiente, apresente um gancho narrativo e ofereça as primeiras escolhas.`;
+Inicie a aventura com uma cena envolvente que capture a atenÃ§Ã£o do jogador imediatamente. EstabeleÃ§a o ambiente, apresente um gancho narrativo e ofereÃ§a as primeiras escolhas.`;
 
     return await this.chat(prompt, { resetHistory: true, temperature: 0.9 });
   }
 
   /**
-   * Continua a narrativa baseado na ação do jogador
-   * @param {string} playerAction - Ação descrita pelo jogador
-   * @returns {Promise<string>} Continuação da narrativa
+   * Continua a narrativa baseado na aÃ§Ã£o do jogador
+   * @param {string} playerAction - AÃ§Ã£o descrita pelo jogador
+   * @returns {Promise<string>} ContinuaÃ§Ã£o da narrativa
    */
   async continueNarrative(playerAction) {
-    const prompt = `Ação do jogador: ${playerAction}
+    const prompt = `AÃ§Ã£o do jogador: ${playerAction}
 
-Como Mestre da Aventura, responda à ação do jogador:
-1. Descreva vividamente o resultado da ação
+Como Mestre da Aventura, responda Ã  aÃ§Ã£o do jogador:
+1. Descreva vividamente o resultado da aÃ§Ã£o
 2. Introduza novos elementos narrativos se apropriado
-3. Mantenha a tensão e o interesse
+3. Mantenha a tensÃ£o e o interesse
 4. Apresente novas escolhas ou desafios
-5. Use mecânicas do PF2e quando necessário (testes, combate, etc)
+5. Use mecÃ¢nicas do PF2e quando necessÃ¡rio (testes, combate, etc)
 
 Responda de forma imersiva e termine oferecendo novas possibilidades ao jogador.`;
 
@@ -170,9 +170,9 @@ Responda de forma imersiva e termine oferecendo novas possibilidades ao jogador.
   }
 
   /**
-   * Gera descrição narrativa de uma cena para aventura solo
+   * Gera descriÃ§Ã£o narrativa de uma cena para aventura solo
    * @param {Object} sceneData - Dados da cena
-   * @returns {Promise<string>} Descrição gerada
+   * @returns {Promise<string>} DescriÃ§Ã£o gerada
    */
   async describeScene(sceneData) {
     const prompt = `Como Mestre da Aventura Solo, descreva de forma envolvente e imersiva a seguinte cena para o jogador:
@@ -180,49 +180,49 @@ Responda de forma imersiva e termine oferecendo novas possibilidades ao jogador.
 Nome da Cena: ${sceneData.name}
 ${sceneData.description ? `Contexto: ${sceneData.description}` : ""}
 
-INSTRUÇÕES:
-- Narre em segunda pessoa ("Você se encontra...", "Ao seu redor...")
-- Use descrições sensoriais ricas (visão, som, cheiro, tato)
+INSTRUÃ‡Ã•ES:
+- Narre em segunda pessoa ("VocÃª se encontra...", "Ao seu redor...")
+- Use descriÃ§Ãµes sensoriais ricas (visÃ£o, som, cheiro, tato)
 - Crie atmosfera apropriada ao local
-- Sugira possibilidades de exploração
+- Sugira possibilidades de exploraÃ§Ã£o
 - Inclua detalhes que despertem curiosidade
 - Termine com uma pergunta ou escolha para o jogador
 
-Faça o jogador SENTIR que está realmente lá.`;
+FaÃ§a o jogador SENTIR que estÃ¡ realmente lÃ¡.`;
 
     return await this.chat(prompt, { resetHistory: true, temperature: 0.8 });
   }
 
   /**
    * Gera um NPC simples para aventura solo
-   * @param {Object} npcParams - Parâmetros do NPC
+   * @param {Object} npcParams - ParÃ¢metros do NPC
    * @returns {Promise<Object>} Dados do NPC gerado
    */
   async generateNPC(npcParams) {
     const {
-      ancestry = "aleatória",
+      ancestry = "aleatÃ³ria",
       level = 1,
-      role = "genérico",
+      role = "genÃ©rico",
       alignment = "neutro",
-      personality = "aleatória",
+      personality = "aleatÃ³ria",
     } = npcParams;
 
-    // Ajustar nível de desafio para jogador solo (níveis baixos: -1, médios: -2, altos: -3)
+    // Ajustar nÃ­vel de desafio para jogador solo (nÃ­veis baixos: -1, mÃ©dios: -2, altos: -3)
     const adjustedLevel = Math.max(level - 1, -1);
 
     // Prompt simplificado incluindo equipamentos
     const prompt = `Crie um NPC para aventura SOLO em Pathfinder 2e:
 
 Ancestralidade: ${ancestry}
-Nível do Jogador: ${level}
-Nível do NPC: ${adjustedLevel} (ajustado para desafio solo)
+NÃ­vel do Jogador: ${level}
+NÃ­vel do NPC: ${adjustedLevel} (ajustado para desafio solo)
 Papel: ${role}
 
-Forneça APENAS:
+ForneÃ§a APENAS:
 - Nome
-- Aparência (2 frases)
+- AparÃªncia (2 frases)
 - Personalidade (2 frases)
-- Equipamento: liste 2-4 itens apropriados para nível ${adjustedLevel} (armas, armadura, itens úteis)
+- Equipamento: liste 2-4 itens apropriados para nÃ­vel ${adjustedLevel} (armas, armadura, itens Ãºteis)
 - O que oferece ao jogador (1 frase)
 
 Seja DIRETO. Sem lore extenso.`;
@@ -241,21 +241,21 @@ Seja DIRETO. Sem lore extenso.`;
   /**
    * Fornece ajuda com regras do PF2e
    * @param {string} ruleQuery - Pergunta sobre regra
-   * @returns {Promise<string>} Explicação da regra
+   * @returns {Promise<string>} ExplicaÃ§Ã£o da regra
    */
   async getRuleHelp(ruleQuery) {
     const prompt = `Como especialista em regras do Pathfinder 2e, explique de forma clara e concisa:
 
 ${ruleQuery}
 
-Cite a regra oficial quando possível e forneça exemplos práticos.`;
+Cite a regra oficial quando possÃ­vel e forneÃ§a exemplos prÃ¡ticos.`;
 
     return await this.chat(prompt, { resetHistory: true });
   }
 
   /**
    * Gera dados estruturados para cena de combate
-   * @param {Object} sceneParams - Parâmetros da cena
+   * @param {Object} sceneParams - ParÃ¢metros da cena
    * @returns {Promise<Object>} Dados da cena estruturados
    */
   async generateCombatScene(sceneParams) {
@@ -266,20 +266,20 @@ Cite a regra oficial quando possível e forneça exemplos práticos.`;
       difficulty = "moderado",
     } = sceneParams;
 
-    // Simplificado: usar estrutura fixa e só pedir nomes/descrição
+    // Simplificado: usar estrutura fixa e sÃ³ pedir nomes/descriÃ§Ã£o
     const prompt = `Cena de combate para Pathfinder 2e:
 Local: ${locationType}
 Inimigos: ${enemyCount}
 
-Forneça APENAS:
+ForneÃ§a APENAS:
 1. Nome da cena (curto)
-2. Descrição (1 frase)
+2. DescriÃ§Ã£o (1 frase)
 3. Nome de ${enemyCount} inimigos apropriados para ${locationType}
 4. Objetos (2-4 itens: mesa, caixa, barril, pedra, altar, etc)
 
 Exemplo:
 Nome: Taverna Sombria
-Descrição: Mobília quebrada e cheiro de cerveja.
+DescriÃ§Ã£o: MobÃ­lia quebrada e cheiro de cerveja.
 Inimigos: Bandido, Capanga
 Objetos: Mesa grande, Barril, Cadeiras quebradas`;
 
@@ -288,11 +288,13 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
       temperature: 0.6,
     });
 
-    // Extrair informações da resposta
+    // Extrair informaÃ§Ãµes da resposta
     const nameMatch = response.match(/Nome:\s*(.+)/i);
-    const descMatch = response.match(/Descrição:\s*(.+)/i);
+    const descMatch = response.match(/DescriÃ§Ã£o:\s*(.+)/i);
     const enemiesMatch = response.match(/Inimigos?:\s*(.+)/i);
     const objectsMatch = response.match(/Objetos?:\s*(.+)/i);
+    const doorsMatch = response.match(/Portas?:\s*(.+)/i);
+    const windowsMatch = response.match(/Janelas?:\s*(.+)/i);
 
     const sceneName = nameMatch
       ? nameMatch[1].trim()
@@ -307,8 +309,26 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
           .slice(0, enemyCount)
       : Array(enemyCount).fill("Inimigo");
     const objectNames = objectsMatch
-      ? objectsMatch[1].split(',').map(o => o.trim()).slice(0, 4)
-      : ['Mesa', 'Caixa'];
+      ? objectsMatch[1]
+          .split(",")
+          .map((o) => o.trim())
+          .slice(0, 4)
+      : ["Mesa", "Caixa"];
+    
+    // Extrair portas e janelas
+    const doorsList = doorsMatch
+      ? doorsMatch[1]
+          .split(",")
+          .map((d) => d.trim().toLowerCase())
+          .filter((d) => ["norte", "sul", "leste", "oeste"].includes(d))
+      : ["sul"];  // Padr?o: porta ao sul
+    
+    const windowsList = windowsMatch
+      ? windowsMatch[1]
+          .split(",")
+          .map((w) => w.trim().toLowerCase())
+          .filter((w) => ["norte", "sul", "leste", "oeste"].includes(w))
+      : [];  // Padr?o: sem janelas
 
     // Gerar estrutura baseada no tipo de local
     const gridSize = 30;
@@ -320,7 +340,7 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
     const pixelWidth = roomWidth * 100;
     const pixelHeight = roomHeight * 100;
 
-    // Paredes formando retângulo
+    // Paredes formando retÃ¢ngulo
     const walls = [
       { x1: 0, y1: 0, x2: pixelWidth, y2: 0 }, // Norte
       { x1: pixelWidth, y1: 0, x2: pixelWidth, y2: pixelHeight }, // Leste
@@ -363,14 +383,40 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
       const y = Math.floor(2 + Math.random() * (roomHeight - 4));
       const width = 2; // 2 quadrados
       const height = 1; // 1 quadrado
-      
+
       return {
         name: name,
         x: x,
         y: y,
         width: width,
-        height: height
+        height: height,
       };
+    });
+
+    // Gerar informa??es de portas para o Foundry
+    const doors = [];
+    const doorPositions = {
+      norte: { x: centerH, y: 0 },
+      sul: { x: centerH, y: pixelHeight },
+      leste: { x: pixelWidth, y: centerV },
+      oeste: { x: 0, y: centerV }
+    };
+    
+    doorsList.forEach(dir => {
+      doors.push({
+        direction: dir,
+        x: doorPositions[dir].x,
+        y: doorPositions[dir].y
+      });
+    });
+    
+    const windows = [];
+    windowsList.forEach(dir => {
+      windows.push({
+        direction: dir,
+        x: doorPositions[dir].x,
+        y: doorPositions[dir].y
+      });
     });
 
     return {
@@ -381,13 +427,15 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
       lights,
       playerStart: { x: roomWidth / 2, y: roomHeight - 2 },
       enemies,
-      objects
+      objects,
+      doors,
+      windows
     };
   }
 
   /**
-   * Faz chamada à API do Gemini
-   * @param {Object} requestBody - Corpo da requisição
+   * Faz chamada Ã  API do Gemini
+   * @param {Object} requestBody - Corpo da requisiÃ§Ã£o
    * @returns {Promise<Object>} Resposta da API
    */
   async generateContent(requestBody) {
@@ -415,7 +463,7 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
   /**
    * Extrai texto da resposta do Gemini
    * @param {Object} response - Resposta da API
-   * @returns {string} Texto extraído
+   * @returns {string} Texto extraÃ­do
    */
   extractTextFromResponse(response) {
     // Log para debug
@@ -431,15 +479,15 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
 
     const candidate = response.candidates[0];
 
-    // Verificar se há bloqueio de segurança
+    // Verificar se hÃ¡ bloqueio de seguranÃ§a
     if (candidate.finishReason === "SAFETY") {
       throw new Error(
-        "Resposta bloqueada por filtros de segurança. Tente reformular sua pergunta."
+        "Resposta bloqueada por filtros de seguranÃ§a. Tente reformular sua pergunta."
       );
     }
 
     // IMPORTANTE: Gemini 2.5 Pro pode usar thinking tokens
-    // Se MAX_TOKENS foi atingido apenas no raciocínio, parts pode estar vazio
+    // Se MAX_TOKENS foi atingido apenas no raciocÃ­nio, parts pode estar vazio
     if (candidate.finishReason === "MAX_TOKENS") {
       const thoughtsCount = response.usageMetadata?.thoughtsTokenCount || 0;
       const totalCount = response.usageMetadata?.totalTokenCount || 0;
@@ -449,13 +497,13 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
         hasContent: !!candidate.content,
       });
 
-      // Se o modelo usou todos os tokens para raciocínio e não gerou resposta
+      // Se o modelo usou todos os tokens para raciocÃ­nio e nÃ£o gerou resposta
       if (
         thoughtsCount > 0 &&
         (!candidate.content?.parts || candidate.content.parts.length === 0)
       ) {
         throw new Error(
-          `Limite de tokens atingido durante o raciocínio (${thoughtsCount} tokens). Aumente o valor de "Comprimento Máximo da Narrativa" nas configurações para pelo menos ${
+          `Limite de tokens atingido durante o raciocÃ­nio (${thoughtsCount} tokens). Aumente o valor de "Comprimento MÃ¡ximo da Narrativa" nas configuraÃ§Ãµes para pelo menos ${
             Math.ceil((totalCount + 2000) / 512) * 512
           }.`
         );
@@ -465,12 +513,12 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
     // Verificar estrutura da resposta
     if (!candidate.content) {
       console.error("GeminiAPI | Sem content no candidate:", candidate);
-      throw new Error("Resposta da IA em formato inválido (sem content)");
+      throw new Error("Resposta da IA em formato invÃ¡lido (sem content)");
     }
 
     if (!candidate.content.parts || candidate.content.parts.length === 0) {
       console.error("GeminiAPI | Sem parts no content:", candidate.content);
-      throw new Error("Resposta da IA em formato inválido (sem parts)");
+      throw new Error("Resposta da IA em formato invÃ¡lido (sem parts)");
     }
 
     const text = candidate.content.parts
@@ -479,7 +527,7 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
       .trim();
 
     if (!text) {
-      console.error("GeminiAPI | Texto vazio extraído");
+      console.error("GeminiAPI | Texto vazio extraÃ­do");
       throw new Error("Resposta vazia da IA");
     }
 
@@ -487,17 +535,18 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
   }
 
   /**
-   * Limpa o histórico de conversação
+   * Limpa o histÃ³rico de conversaÃ§Ã£o
    */
   clearHistory() {
     this.conversationHistory = [];
   }
 
   /**
-   * Obtém o histórico de conversação
-   * @returns {Array} Histórico
+   * ObtÃ©m o histÃ³rico de conversaÃ§Ã£o
+   * @returns {Array} HistÃ³rico
    */
   getHistory() {
     return [...this.conversationHistory];
   }
 }
+
