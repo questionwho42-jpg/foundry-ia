@@ -11,15 +11,15 @@ export class AIDungeonMasterApp extends Application {
     this.conversationHistory = [];
     this.adventureStarted = false;
     this.characterInfo = null;
-    
+
     // Adicionar hooks para atualizar quando cena/tokens mudarem
     this._hookIds = [];
   }
-  
+
   /** @override */
   async close(options) {
     // Remover hooks quando fechar
-    this._hookIds.forEach(id => Hooks.off(id));
+    this._hookIds.forEach((id) => Hooks.off(id));
     this._hookIds = [];
     return super.close(options);
   }
@@ -49,7 +49,7 @@ export class AIDungeonMasterApp extends Application {
       conversationHistory: this.conversationHistory,
       hasApiKey: !!game.settings.get("ai-dungeon-master-pf2e", "geminiApiKey"),
       activeScene: canvas.scene?.name || "Nenhuma",
-      selectedTokens: controlled.map(t => ({ name: t.name })),
+      selectedTokens: controlled.map((t) => ({ name: t.name })),
       character: controlled[0]?.name || "Sem personagem selecionado",
       adventureStarted: this.adventureStarted,
     };
@@ -80,21 +80,25 @@ export class AIDungeonMasterApp extends Application {
 
     // Auto-scroll para o final do chat
     this._scrollToBottom(html);
-    
+
     // Adicionar hooks para re-renderizar quando contexto mudar
     // Remover hooks antigos primeiro
-    this._hookIds.forEach(id => Hooks.off(id));
+    this._hookIds.forEach((id) => Hooks.off(id));
     this._hookIds = [];
-    
+
     // Hook quando a cena muda
-    this._hookIds.push(Hooks.on('canvasReady', () => {
-      this.render(false);
-    }));
-    
+    this._hookIds.push(
+      Hooks.on("canvasReady", () => {
+        this.render(false);
+      })
+    );
+
     // Hook quando tokens são selecionados/desselecionados
-    this._hookIds.push(Hooks.on('controlToken', () => {
-      this.render(false);
-    }));
+    this._hookIds.push(
+      Hooks.on("controlToken", () => {
+        this.render(false);
+      })
+    );
   }
 
   /**
@@ -384,9 +388,11 @@ export class AIDungeonMasterApp extends Application {
       // Salvar referência do ator do jogador ANTES de gerar a cena
       const playerToken = canvas.tokens?.controlled[0];
       const playerActor = playerToken?.actor;
-      
+
       if (!playerActor) {
-        ui.notifications.warn('Nenhum token selecionado. Selecione seu personagem antes de gerar a cena.');
+        ui.notifications.warn(
+          "Nenhum token selecionado. Selecione seu personagem antes de gerar a cena."
+        );
         return;
       }
 
@@ -452,26 +458,33 @@ export class AIDungeonMasterApp extends Application {
       if (sceneData.enemies && sceneData.enemies.length > 0) {
         for (const enemy of sceneData.enemies) {
           // Buscar no compendium de bestiário PF2e
-          const packs = game.packs.filter(p => p.metadata.type === 'Actor' && p.metadata.name.includes('bestiary'));
+          const packs = game.packs.filter(
+            (p) =>
+              p.metadata.type === "Actor" &&
+              p.metadata.name.includes("bestiary")
+          );
           let actor = null;
-          
+
           // Tentar encontrar criatura por nome
           for (const pack of packs) {
             const index = await pack.getIndex();
-            const entry = index.find(e => 
-              e.name.toLowerCase().includes(enemy.name.toLowerCase()) ||
-              enemy.name.toLowerCase().includes(e.name.toLowerCase())
+            const entry = index.find(
+              (e) =>
+                e.name.toLowerCase().includes(enemy.name.toLowerCase()) ||
+                enemy.name.toLowerCase().includes(e.name.toLowerCase())
             );
-            
+
             if (entry) {
               actor = await pack.getDocument(entry._id);
               break;
             }
           }
-          
+
           // Se não encontrou no compendium, criar genérico
           if (!actor) {
-            console.warn(`AI DM | Criatura "${enemy.name}" não encontrada no compendium, criando genérica`);
+            console.warn(
+              `AI DM | Criatura "${enemy.name}" não encontrada no compendium, criando genérica`
+            );
             actor = await Actor.create({
               name: enemy.name || "Inimigo",
               type: "npc",
@@ -489,7 +502,7 @@ export class AIDungeonMasterApp extends Application {
             {
               name: actor.name,
               actorId: actor.id,
-              actorLink: false,  // Não linkar (criar cópia única)
+              actorLink: false, // Não linkar (criar cópia única)
               x: enemy.x * gridSize,
               y: enemy.y * gridSize,
               disposition: -1, // Hostil
@@ -509,7 +522,7 @@ export class AIDungeonMasterApp extends Application {
             roomDimensions: `${sceneData.gridSize}x${sceneData.gridSize}`,
             playerStartGrid: sceneData.playerStart,
             playerStartPixels: { x: playerStartX, y: playerStartY },
-            sceneSize: { width: sceneWidth, height: sceneHeight }
+            sceneSize: { width: sceneWidth, height: sceneHeight },
           });
 
           console.log(`AI DM | Adicionando token do jogador:`, {
@@ -517,30 +530,42 @@ export class AIDungeonMasterApp extends Application {
             actorId: playerActor.id,
             x: playerStartX,
             y: playerStartY,
-            sceneId: scene.id
+            sceneId: scene.id,
+            img: playerActor.prototypeToken?.texture?.src || playerActor.img,
           });
 
-          const tokenData = [{
-            name: playerActor.name,
-            actorId: playerActor.id,
-            actorLink: true,  // Linkar ao ator original
-            x: playerStartX,
-            y: playerStartY,
-            width: 1,  // Tamanho do token em grid units
-            height: 1,
-            disposition: 1,  // Amigável
-            hidden: false,
-            vision: true,
-            sight: {
-              enabled: true,
-              range: 60
-            }
-          }];
+          const tokenData = [
+            {
+              name: playerActor.name,
+              actorId: playerActor.id,
+              actorLink: true, // Linkar ao ator original
+              x: playerStartX,
+              y: playerStartY,
+              width: 1, // Tamanho do token em grid units
+              height: 1,
+              texture: {
+                src:
+                  playerActor.prototypeToken?.texture?.src || playerActor.img,
+              },
+              disposition: 1, // Amigável
+              hidden: false,
+              vision: true,
+              sight: {
+                enabled: true,
+                range: 60,
+              },
+            },
+          ];
 
-          const createdTokens = await scene.createEmbeddedDocuments("Token", tokenData);
+          const createdTokens = await scene.createEmbeddedDocuments(
+            "Token",
+            tokenData
+          );
           console.log(`AI DM | Token criado com sucesso:`, createdTokens);
-          
-          ui.notifications.info(`Token de ${playerActor.name} adicionado à cena!`);
+
+          ui.notifications.info(
+            `Token de ${playerActor.name} adicionado à cena!`
+          );
         } catch (error) {
           console.error(`AI DM | Erro ao adicionar token do jogador:`, error);
           ui.notifications.error(`Erro ao adicionar token: ${error.message}`);
@@ -549,49 +574,53 @@ export class AIDungeonMasterApp extends Application {
 
       // Desenhar objetos decorativos
       if (sceneData.objects && sceneData.objects.length > 0) {
-        const drawings = sceneData.objects.map(obj => ({
+        const drawings = sceneData.objects.map((obj) => ({
           x: obj.x * gridSize,
           y: obj.y * gridSize,
           shape: {
-            type: 'r',  // Retângulo
+            type: "r", // Retângulo
             width: obj.width * gridSize,
-            height: obj.height * gridSize
+            height: obj.height * gridSize,
           },
-          fillColor: '#8B4513',  // Marrom
+          fillColor: "#8B4513", // Marrom
           fillAlpha: 0.5,
           strokeWidth: 2,
-          strokeColor: '#000000',
+          strokeColor: "#000000",
           strokeAlpha: 1,
           text: obj.name,
-          textColor: '#FFFFFF',
+          textColor: "#FFFFFF",
           textAlpha: 1,
           fontSize: 24,
-          fontFamily: 'Signika'
+          fontFamily: "Signika",
         }));
-        
+
         await scene.createEmbeddedDocuments("Drawing", drawings);
-        ui.notifications.info(`${sceneData.objects.length} objetos adicionados à cena!`);
+        ui.notifications.info(
+          `${sceneData.objects.length} objetos adicionados à cena!`
+        );
       }
 
       // Ativar e visualizar a cena
       console.log(`AI DM | Ativando cena: ${scene.name} (ID: ${scene.id})`);
-      await scene.activate();  // Definir como cena ativa
-      await scene.view();      // Abrir visualização da cena
-      
+      await scene.activate(); // Definir como cena ativa
+      await scene.view(); // Abrir visualização da cena
+
       // Aguardar canvas carregar
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // Centralizar câmera na posição do jogador
       const playerStartX = sceneData.playerStart.x * gridSize;
       const playerStartY = sceneData.playerStart.y * gridSize;
-      
-      console.log(`AI DM | Centralizando câmera em: x=${playerStartX}, y=${playerStartY}`);
-      
+
+      console.log(
+        `AI DM | Centralizando câmera em: x=${playerStartX}, y=${playerStartY}`
+      );
+
       await canvas.animatePan({
         x: playerStartX,
         y: playerStartY,
         scale: 1,
-        duration: 500
+        duration: 500,
       });
 
       ui.notifications.success(
