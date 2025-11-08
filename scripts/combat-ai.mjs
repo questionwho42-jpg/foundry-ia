@@ -23,20 +23,23 @@ export class CombatAI {
       const currentCombatant = combat.combatant;
       if (!currentCombatant) return;
 
-      const token = currentCombatant.token;
-      if (!token) return;
+      const tokenDoc = currentCombatant.token;
+      if (!tokenDoc) return;
 
-      console.log(`Combat AI | Turno mudou para: ${token.name}, tipo: ${token.actor.type}, disposition: ${token.document.disposition}`);
+      const actor = currentCombatant.actor;
+      if (!actor) return;
+
+      console.log(`Combat AI | Turno mudou para: ${tokenDoc.name}, tipo: ${actor.type}, disposition: ${tokenDoc.disposition}`);
 
       // Verificar se é NPC inimigo
-      if (token.actor.type === "npc" && token.document.disposition === -1) {
-        console.log(`Combat AI | ✓ Turno do NPC inimigo detectado: ${token.name}`);
+      if (actor.type === "npc" && tokenDoc.disposition === -1) {
+        console.log(`Combat AI | ✓ Turno do NPC inimigo detectado: ${tokenDoc.name}`);
 
         // Aguardar um pouco para não parecer instantâneo
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         try {
-          await this.handleNPCTurn(token, combat);
+          await this.handleNPCTurn(tokenDoc, combat);
         } catch (error) {
           console.error("Combat AI | Erro ao processar turno do NPC:", error);
           ui.notifications.error(`Erro na IA tática: ${error.message}`);
@@ -135,9 +138,13 @@ export class CombatAI {
   /**
    * Coleta informações do estado atual do combate
    */
-  getCombatState(npcToken, combat) {
+  getCombatState(npcTokenDoc, combat) {
     const allTokens = canvas.tokens.placeables;
-    const npcDisposition = npcToken.document.disposition;
+    const npcDisposition = npcTokenDoc.disposition;
+    
+    // Obter token object para cálculos de posição
+    const npcToken = npcTokenDoc.object;
+    if (!npcToken) return { allies: [], enemies: [] };
 
     // Aliados (mesma disposição)
     const allies = allTokens
