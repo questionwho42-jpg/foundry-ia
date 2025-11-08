@@ -7,6 +7,38 @@ export class GeminiAPI {
         this.baseUrl = 'https://generativelanguage.googleapis.com/v1beta';
         this.model = model;
         this.conversationHistory = [];
+        
+        // Rate limiting
+        this.lastRequestTime = 0;
+        this.requestCount = 0;
+        this.rateLimits = {
+            'gemini-2.5-pro': { rpm: 2, delay: 30000 }, // 2 req/min = 30s entre requisições
+            'gemini-2.5-flash': { rpm: 10, delay: 6000 }, // 10 req/min = 6s entre requisições
+            'gemini-2.5-flash-8b': { rpm: 15, delay: 4000 } // 15 req/min = 4s entre requisições
+        };
+    }
+    
+    /**
+     * Verifica e aplica rate limiting
+     */
+    async checkRateLimit() {
+        const limit = this.rateLimits[this.model] || this.rateLimits['gemini-2.5-pro'];
+        const now = Date.now();
+        const timeSinceLastRequest = now - this.lastRequestTime;
+        
+        if (timeSinceLastRequest < limit.delay) {
+            const waitTime = limit.delay - timeSinceLastRequest;
+            const waitSeconds = Math.ceil(waitTime / 1000);
+            
+            ui.notifications.warn(
+                `Aguarde ${waitSeconds}s para evitar exceder o limite da API (${limit.rpm} requisições/min)`,
+                { permanent: false }
+            );
+            
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+        }
+        
+        this.lastRequestTime = Date.now();
     }
     
     /**
@@ -16,6 +48,9 @@ export class GeminiAPI {
      * @returns {Promise<string>} Resposta da IA
      */
     async chat(message, options = {}) {
+        // Aplicar rate limiting
+        await this.checkRateLimit();
+        
         const {
             systemContext = '',
             temperature = 0.7,

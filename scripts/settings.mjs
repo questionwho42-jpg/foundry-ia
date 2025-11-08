@@ -23,11 +23,19 @@ export function registerSettings() {
         config: true,
         type: String,
         choices: {
-            'gemini-2.5-pro': 'Gemini 2.5 Pro (Recomendado - Narrativa Avançada)',
-            'gemini-2.5-flash': 'Gemini 2.5 Flash (Rápido)',
-            'gemini-2.5-flash-8b': 'Gemini 2.5 Flash-8B (Econômico)'
+            'gemini-2.5-flash': 'Gemini 2.5 Flash (10 req/min) ⚡ RECOMENDADO GRÁTIS',
+            'gemini-2.5-flash-8b': 'Gemini 2.5 Flash-8B (15 req/min) 💰 Econômico',
+            'gemini-2.5-pro': 'Gemini 2.5 Pro (2 req/min) 🎯 Avançado - Requer Conta Paga'
         },
-        default: 'gemini-2.5-pro'
+        default: 'gemini-2.5-flash',
+        onChange: value => {
+            const limits = {
+                'gemini-2.5-pro': '2 requisições/min (apenas com conta paga)',
+                'gemini-2.5-flash': '10 requisições/min (grátis)',
+                'gemini-2.5-flash-8b': '15 requisições/min (grátis)'
+            };
+            ui.notifications.info(`Modelo alterado. Limite: ${limits[value]}`);
+        }
     });
     
     // Temperatura da IA (criatividade)

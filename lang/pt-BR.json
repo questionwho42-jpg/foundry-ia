@@ -7,7 +7,7 @@
       },
       "Model": {
         "Name": "Modelo do Gemini",
-        "Hint": "Qual modelo usar. Gemini 2.5 Pro é recomendado para narrativas ricas e imersivas. Flash é mais rápido e econômico."
+        "Hint": "TIER GRATUITO: Flash (10 req/min) ou Flash-8B (15 req/min) são ideais. Pro (2 req/min) requer conta paga ou aguardar 30s entre ações."
       },
       "Temperature": {
         "Name": "Criatividade da IA (Temperatura)",
