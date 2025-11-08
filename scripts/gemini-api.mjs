@@ -278,19 +278,43 @@ Cite a regra oficial quando possível e forneça exemplos práticos.`;
      * @returns {string} Texto extraído
      */
     extractTextFromResponse(response) {
+        // Log para debug
+        console.log('GeminiAPI | Resposta recebida:', JSON.stringify(response, null, 2));
+        
         if (!response.candidates || response.candidates.length === 0) {
+            console.error('GeminiAPI | Sem candidates na resposta');
             throw new Error('Nenhuma resposta gerada pela IA');
         }
         
         const candidate = response.candidates[0];
-        if (!candidate.content || !candidate.content.parts) {
-            throw new Error('Resposta da IA em formato inválido');
+        
+        // Verificar se há bloqueio de segurança
+        if (candidate.finishReason === 'SAFETY') {
+            throw new Error('Resposta bloqueada por filtros de segurança. Tente reformular sua pergunta.');
         }
         
-        return candidate.content.parts
-            .map(part => part.text)
+        // Verificar estrutura da resposta
+        if (!candidate.content) {
+            console.error('GeminiAPI | Sem content no candidate:', candidate);
+            throw new Error('Resposta da IA em formato inválido (sem content)');
+        }
+        
+        if (!candidate.content.parts || candidate.content.parts.length === 0) {
+            console.error('GeminiAPI | Sem parts no content:', candidate.content);
+            throw new Error('Resposta da IA em formato inválido (sem parts)');
+        }
+        
+        const text = candidate.content.parts
+            .map(part => part.text || '')
             .join('')
             .trim();
+            
+        if (!text) {
+            console.error('GeminiAPI | Texto vazio extraído');
+            throw new Error('Resposta vazia da IA');
+        }
+        
+        return text;
     }
     
     /**
