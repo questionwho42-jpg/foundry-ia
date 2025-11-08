@@ -9,12 +9,14 @@ export class AIDungeonMasterApp extends Application {
         super(options);
         this.gemini = null;
         this.conversationHistory = [];
+        this.adventureStarted = false;
+        this.characterInfo = null;
     }
     
     static get defaultOptions() {
         return foundry.utils.mergeObject(super.defaultOptions, {
             id: 'ai-dungeon-master',
-            title: 'AI Dungeon Master',
+            title: 'Narrador de Aventura Solo IA',
             template: 'modules/ai-dungeon-master-pf2e/templates/ai-dm-app.hbs',
             width: 600,
             height: 700,
@@ -35,10 +37,9 @@ export class AIDungeonMasterApp extends Application {
             conversationHistory: this.conversationHistory,
             hasApiKey: !!game.settings.get('ai-dungeon-master-pf2e', 'geminiApiKey'),
             activeScene: canvas.scene?.name || 'Nenhuma',
-            selectedTokens: canvas.tokens?.controlled.map(t => ({
-                name: t.name,
-                id: t.id
-            })) || []
+            selectedToken: canvas.tokens?.controlled[0],
+            character: canvas.tokens?.controlled[0]?.name || 'Sem personagem selecionado',
+            adventureStarted: this.adventureStarted
         };
     }
     
@@ -55,9 +56,9 @@ export class AIDungeonMasterApp extends Application {
         });
         
         // Listeners para ações rápidas
+        html.find('#start-adventure').on('click', () => this._onStartAdventure(html));
         html.find('#describe-scene').on('click', () => this._onDescribeScene(html));
         html.find('#generate-npc').on('click', () => this._onGenerateNPC(html));
-        html.find('#rule-help').on('click', () => this._onRuleHelp(html));
         html.find('#clear-chat').on('click', () => this._onClearChat(html));
         
         // Auto-scroll para o final do chat
@@ -94,13 +95,12 @@ export class AIDungeonMasterApp extends Application {
         try {
             // Inicializar Gemini se necessário
             if (!this.gemini) {
-                this.gemini = new GeminiAPI(apiKey);
+                const model = game.settings.get('ai-dungeon-master-pf2e', 'geminiModel');
+                this.gemini = new GeminiAPI(apiKey, model);
             }
             
             // Enviar para a IA
-            const response = await this.gemini.chat(message, {
-                systemContext: this.conversationHistory.length === 1 ? getGameContext() : undefined
-            });
+            const response = await this.gemini.continueNarrative(message);
             
             // Adicionar resposta ao histórico
             this.conversationHistory.push({
@@ -117,6 +117,98 @@ export class AIDungeonMasterApp extends Application {
             // Remover a mensagem do usuário se houve erro
             this.conversationHistory.pop();
             this.render();
+        }
+    }
+    
+    /**
+     * Inicia uma nova aventura solo
+     */
+    async _onStartAdventure(html) {
+        const token = canvas.tokens?.controlled[0];
+        if (!token) {
+            ui.notifications.warn('Selecione um token de personagem primeiro!');
+            return;
+        }
+        
+        new Dialog({
+            title: 'Iniciar Aventura Solo',
+            content: `
+                <form>
+                    <div class="form-group">
+                        <label>Personagem: <strong>${token.name}</strong></label>
+                    </div>
+                    <div class="form-group">
+                        <label>Tema da Aventura:</label>
+                        <select name="theme">
+                            <option value="fantasia medieval">Fantasia Medieval</option>
+                            <option value="terror gótico">Terror Gótico</option>
+                            <option value="investigação urbana">Investigação Urbana</option>
+                            <option value="exploração de masmorras">Exploração de Masmorras</option>
+                            <option value="mistério e intriga">Mistério e Intriga</option>
+                            <option value="alto mar e pirataria">Alto Mar e Pirataria</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Cenário Inicial:</label>
+                        <input type="text" name="setting" value="uma taverna movimentada" placeholder="Ex: uma floresta sombria"/>
+                    </div>
+                </form>
+            `,
+            buttons: {
+                start: {
+                    icon: '<i class="fas fa-play"></i>',
+                    label: 'Começar Aventura',
+                    callback: async (html) => {
+                        const formData = new FormDataExtended(html.find('form')[0]).object;
+                        await this._beginAdventure(token, formData);
+                    }
+                },
+                cancel: {
+                    icon: '<i class="fas fa-times"></i>',
+                    label: 'Cancelar'
+                }
+            },
+            default: 'start'
+        }).render(true);
+    }
+    
+    async _beginAdventure(token, params) {
+        const apiKey = game.settings.get('ai-dungeon-master-pf2e', 'geminiApiKey');
+        if (!apiKey) {
+            ui.notifications.error('Configure sua chave API primeiro!');
+            return;
+        }
+        
+        try {
+            if (!this.gemini) {
+                const model = game.settings.get('ai-dungeon-master-pf2e', 'geminiModel');
+                this.gemini = new GeminiAPI(apiKey, model);
+            }
+            
+            const adventureParams = {
+                characterName: token.name,
+                characterClass: token.actor?.class?.name || 'Aventureiro',
+                characterLevel: token.actor?.level || 1,
+                theme: params.theme,
+                setting: params.setting
+            };
+            
+            const intro = await this.gemini.startSoloAdventure(adventureParams);
+            
+            this.adventureStarted = true;
+            this.characterInfo = adventureParams;
+            
+            this.conversationHistory.push({
+                role: 'assistant',
+                content: `**🎭 AVENTURA INICIADA**\n\n${intro}`,
+                timestamp: new Date()
+            });
+            
+            this.render();
+            ui.notifications.info('Aventura solo iniciada! Boa sorte!');
+        } catch (error) {
+            console.error('AI DM | Erro ao iniciar aventura:', error);
+            ui.notifications.error('Erro ao iniciar aventura');
         }
     }
     

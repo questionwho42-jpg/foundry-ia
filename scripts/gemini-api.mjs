@@ -2,10 +2,10 @@
  * Cliente para a API do Google Gemini
  */
 export class GeminiAPI {
-    constructor(apiKey) {
+    constructor(apiKey, model = 'gemini-2.5-pro') {
         this.apiKey = apiKey;
         this.baseUrl = 'https://generativelanguage.googleapis.com/v1beta';
-        this.model = 'gemini-1.5-flash'; // Modelo padrão
+        this.model = model;
         this.conversationHistory = [];
     }
     
@@ -72,24 +72,91 @@ export class GeminiAPI {
     }
     
     /**
-     * Gera descrição narrativa de uma cena
+     * Inicia uma aventura solo narrativa
+     * @param {Object} adventureParams - Parâmetros da aventura
+     * @returns {Promise<string>} Introdução narrativa
+     */
+    async startSoloAdventure(adventureParams) {
+        const {
+            characterName = 'aventureiro',
+            characterClass = 'desconhecida',
+            characterLevel = 1,
+            theme = 'fantasia medieval',
+            setting = 'uma taverna'
+        } = adventureParams;
+        
+        const prompt = `Você é um Mestre de Aventuras Solo expert em Pathfinder 2e. Sua função é narrar uma história interativa e envolvente para UM único jogador.
+
+PERSONAGEM DO JOGADOR:
+- Nome: ${characterName}
+- Classe: ${characterClass}
+- Nível: ${characterLevel}
+
+CONFIGURAÇÃO DA AVENTURA:
+- Tema: ${theme}
+- Cenário inicial: ${setting}
+
+INSTRUÇÕES IMPORTANTES:
+1. Narre em segunda pessoa ("você vê", "você sente")
+2. Seja descritivo e imersivo - use todos os sentidos
+3. Apresente escolhas significativas ao jogador
+4. Gerencie NPCs com personalidades distintas
+5. Crie tensão e mistério gradualmente
+6. Mantenha o ritmo apropriado para aventuras solo
+7. Use as regras do Pathfinder 2e quando necessário
+8. Sempre termine com opções ou uma pergunta para o jogador
+
+Inicie a aventura com uma cena envolvente que capture a atenção do jogador imediatamente. Estabeleça o ambiente, apresente um gancho narrativo e ofereça as primeiras escolhas.`;
+        
+        return await this.chat(prompt, { resetHistory: true, temperature: 0.9 });
+    }
+    
+    /**
+     * Continua a narrativa baseado na ação do jogador
+     * @param {string} playerAction - Ação descrita pelo jogador
+     * @returns {Promise<string>} Continuação da narrativa
+     */
+    async continueNarrative(playerAction) {
+        const prompt = `Ação do jogador: ${playerAction}
+
+Como Mestre da Aventura, responda à ação do jogador:
+1. Descreva vividamente o resultado da ação
+2. Introduza novos elementos narrativos se apropriado
+3. Mantenha a tensão e o interesse
+4. Apresente novas escolhas ou desafios
+5. Use mecânicas do PF2e quando necessário (testes, combate, etc)
+
+Responda de forma imersiva e termine oferecendo novas possibilidades ao jogador.`;
+        
+        return await this.chat(prompt);
+    }
+    
+    /**
+     * Gera descrição narrativa de uma cena para aventura solo
      * @param {Object} sceneData - Dados da cena
      * @returns {Promise<string>} Descrição gerada
      */
     async describeScene(sceneData) {
-        const prompt = `Como Dungeon Master, crie uma descrição narrativa e imersiva para a seguinte cena:
+        const prompt = `Como Mestre da Aventura Solo, descreva de forma envolvente e imersiva a seguinte cena para o jogador:
 
-Nome: ${sceneData.name}
-Dimensões: ${sceneData.width}x${sceneData.height}
-${sceneData.description ? `Descrição básica: ${sceneData.description}` : ''}
+Nome da Cena: ${sceneData.name}
+${sceneData.description ? `Contexto: ${sceneData.description}` : ''}
 
-Forneça uma descrição rica em detalhes sensoriais (visão, som, cheiro) que engaje os jogadores.`;
+INSTRUÇÕES:
+- Narre em segunda pessoa ("Você se encontra...", "Ao seu redor...")
+- Use descrições sensoriais ricas (visão, som, cheiro, tato)
+- Crie atmosfera apropriada ao local
+- Sugira possibilidades de exploração
+- Inclua detalhes que despertem curiosidade
+- Termine com uma pergunta ou escolha para o jogador
+
+Faça o jogador SENTIR que está realmente lá.`;
         
-        return await this.chat(prompt, { resetHistory: true });
+        return await this.chat(prompt, { resetHistory: true, temperature: 0.8 });
     }
     
     /**
-     * Gera um NPC baseado em parâmetros
+     * Gera um NPC para aventura solo com personalidade rica
      * @param {Object} npcParams - Parâmetros do NPC
      * @returns {Promise<Object>} Dados do NPC gerado
      */
@@ -98,26 +165,32 @@ Forneça uma descrição rica em detalhes sensoriais (visão, som, cheiro) que e
             ancestry = 'aleatória',
             level = 1,
             role = 'genérico',
-            alignment = 'neutro'
+            alignment = 'neutro',
+            personality = 'aleatória'
         } = npcParams;
         
-        const prompt = `Como especialista em Pathfinder 2e, gere um NPC completo com:
+        const prompt = `Como Mestre da Aventura Solo, crie um NPC MEMORÁVEL e TRIDIMENSIONAL para Pathfinder 2e:
 
-Ancestralidade: ${ancestry}
-Nível: ${level}
-Papel: ${role}
-Alinhamento: ${alignment}
+PARÂMETROS:
+- Ancestralidade: ${ancestry}
+- Nível: ${level}
+- Papel: ${role}
+- Alinhamento: ${alignment}
+- Personalidade: ${personality}
 
-Inclua:
-1. Nome apropriado
-2. Descrição física
-3. Personalidade e motivação
-4. Background breve
-5. Sugestões de perícias e características mecânicas relevantes para PF2e
+INCLUA OBRIGATORIAMENTE:
+1. **Nome** completo e apropriado
+2. **Aparência detalhada** (como o jogador vê este NPC)
+3. **Personalidade única** (maneirismos, modo de falar, quirks)
+4. **Motivação secreta** (o que realmente querem)
+5. **Background envolvente** (história pessoal interessante)
+6. **Ganchos narrativos** (3 formas de envolver este NPC na história)
+7. **Informações úteis** (o que sabem que pode ajudar o jogador)
+8. **Características mecânicas PF2e** relevantes
 
-Formate de forma clara e organizada.`;
+Este NPC deve ser INESQUECÍVEL. Dê vida a eles!`;
         
-        const response = await this.chat(prompt, { resetHistory: true });
+        const response = await this.chat(prompt, { resetHistory: true, temperature: 0.9 });
         
         return {
             description: response,

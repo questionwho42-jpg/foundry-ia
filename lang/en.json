@@ -3,27 +3,27 @@
     "Settings": {
       "ApiKey": {
         "Name": "Google Gemini API Key",
-        "Hint": "Your API key from Google AI Studio (https://ai.google.dev/). Required to use the AI Dungeon Master features."
+        "Hint": "Your API key from Google AI Studio (https://ai.google.dev/). Required to use the AI Solo Adventure Narrator."
       },
       "Model": {
         "Name": "Gemini Model",
-        "Hint": "Which Gemini model to use. Flash is faster and cheaper, Pro is more capable."
+        "Hint": "Which model to use. Gemini 2.5 Pro is recommended for rich, immersive narratives. Flash is faster and more economical."
       },
       "Temperature": {
         "Name": "AI Creativity (Temperature)",
-        "Hint": "Controls randomness in responses. Lower values (0.3) are more focused and deterministic, higher values (1.5) are more creative and varied."
+        "Hint": "Controls creativity in narratives. Lower values (0.5) are more consistent, higher values (1.2) are more creative and unpredictable. Recommended: 0.8-0.9 for adventures."
       },
       "MaxTokens": {
-        "Name": "Maximum Response Length",
-        "Hint": "Maximum number of tokens (roughly words) in AI responses. Higher values allow longer responses but cost more."
+        "Name": "Maximum Narrative Length",
+        "Hint": "Maximum number of tokens in responses. Higher values allow longer, more detailed narratives. Recommended: 4096+ for solo adventures."
       },
       "ChatNotifications": {
-        "Name": "Show Chat Notifications",
-        "Hint": "Display AI responses as chat messages in the main chat window."
+        "Name": "Show Narratives in Chat",
+        "Hint": "Display AI narratives as chat messages in the main chat window."
       },
       "PlayerCommands": {
         "Name": "Allow Player Chat Commands",
-        "Hint": "Allow non-GM players to use /aidm and /dm chat commands. GM always has access."
+        "Hint": "Allow all players to use /aidm and /dm chat commands, not just the GM."
       }
     }
   }

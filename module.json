@@ -1,7 +1,7 @@
 {
   "id": "ai-dungeon-master-pf2e",
-  "title": "AI Dungeon Master for PF2e",
-  "description": "Um assistente de Dungeon Master alimentado por IA usando Google Gemini, especializado em Pathfinder 2e. Oferece suporte narrativo, geração de NPCs, descrições de cenas e assistência com regras.",
+  "title": "AI Solo Adventure Narrator for PF2e",
+  "description": "Um narrador de histórias interativo alimentado por IA (Gemini 2.5 Pro) para aventuras solo em Pathfinder 2e. Cria narrativas envolventes, gerencia NPCs, descreve cenas e conduz aventuras completas para um jogador.",
   "version": "1.0.0",
   "compatibility": {
     "minimum": "11",

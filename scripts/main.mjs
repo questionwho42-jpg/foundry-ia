@@ -83,7 +83,7 @@ async function handleAIDMChatCommand(query) {
     }
     
     try {
-        const gemini = new GeminiAPI(apiKey);
+        const gemini = new GeminiAPI(apiKey, game.settings.get('ai-dungeon-master-pf2e', 'geminiModel'));
         const response = await gemini.chat(query, {
             systemContext: getGameContext()
         });
@@ -91,10 +91,10 @@ async function handleAIDMChatCommand(query) {
         // Enviar resposta como mensagem de chat
         ChatMessage.create({
             speaker: {
-                alias: 'AI Dungeon Master'
+                alias: 'Narrador IA'
             },
             content: `<div class="ai-dm-response">
-                <h3><i class="fas fa-robot"></i> AI Dungeon Master</h3>
+                <h3><i class="fas fa-book-open"></i> Narrador da Aventura</h3>
                 <p>${response}</p>
             </div>`,
             whisper: game.user.isGM ? [] : [game.user.id]
@@ -113,18 +113,30 @@ function getGameContext() {
     const context = {
         system: 'Pathfinder 2e',
         scene: canvas.scene?.name || 'Nenhuma cena ativa',
-        activeTokens: canvas.tokens?.controlled.map(t => t.name) || [],
-        party: game.actors?.filter(a => a.type === 'party').map(p => p.name) || []
+        character: canvas.tokens?.controlled[0]?.name || 'Aventureiro',
+        characterClass: canvas.tokens?.controlled[0]?.actor?.class?.name || 'Desconhecida',
+        characterLevel: canvas.tokens?.controlled[0]?.actor?.level || 1
     };
     
-    return `Você é um assistente de Dungeon Master para Pathfinder 2e.
-Sistema: ${context.system}
-Cena atual: ${context.scene}
-Tokens selecionados: ${context.activeTokens.join(', ') || 'Nenhum'}
-Grupos na campanha: ${context.party.join(', ') || 'Nenhum'}
+    return `CONTEXTO DA AVENTURA SOLO:
 
-Forneça assistência narrativa, descrições criativas, sugestões de combate e ajuda com regras.
-Responda de forma concisa e útil.`;
+Sistema: ${context.system}
+Localização atual: ${context.scene}
+Personagem: ${context.character}
+Classe: ${context.characterClass}
+Nível: ${context.characterLevel}
+
+PAPEL DO NARRADOR:
+Você é o Mestre desta aventura solo. Você narra a história, interpreta todos os NPCs, descreve o mundo e apresenta desafios. Mantenha a narrativa envolvente e ofereça escolhas significativas ao jogador único.
+
+ESTILO DE NARRAÇÃO:
+- Use segunda pessoa ("você vê", "você sente")
+- Seja descritivo e imersivo
+- Crie tensão e mistério
+- Dê personalidade aos NPCs
+- Sempre termine oferecendo escolhas ou uma pergunta
+
+Responda de forma concisa mas impactante.`;
 }
 
 export { handleAIDMChatCommand, getGameContext };

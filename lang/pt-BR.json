@@ -3,27 +3,27 @@
     "Settings": {
       "ApiKey": {
         "Name": "Chave API do Google Gemini",
-        "Hint": "Sua chave API do Google AI Studio (https://ai.google.dev/). Necessária para usar as funcionalidades do AI Dungeon Master."
+        "Hint": "Sua chave API do Google AI Studio (https://ai.google.dev/). Necessária para usar o Narrador de Aventuras Solo com IA."
       },
       "Model": {
         "Name": "Modelo do Gemini",
-        "Hint": "Qual modelo do Gemini usar. Flash é mais rápido e econômico, Pro é mais capaz."
+        "Hint": "Qual modelo usar. Gemini 2.5 Pro é recomendado para narrativas ricas e imersivas. Flash é mais rápido e econômico."
       },
       "Temperature": {
         "Name": "Criatividade da IA (Temperatura)",
-        "Hint": "Controla a aleatoriedade nas respostas. Valores mais baixos (0.3) são mais focados e determinísticos, valores mais altos (1.5) são mais criativos e variados."
+        "Hint": "Controla a criatividade nas narrativas. Valores mais baixos (0.5) são mais consistentes, valores mais altos (1.2) são mais criativos e imprevisíveis. Recomendado: 0.8-0.9 para aventuras."
       },
       "MaxTokens": {
-        "Name": "Comprimento Máximo da Resposta",
-        "Hint": "Número máximo de tokens (aproximadamente palavras) nas respostas da IA. Valores maiores permitem respostas mais longas mas custam mais."
+        "Name": "Comprimento Máximo da Narrativa",
+        "Hint": "Número máximo de tokens nas respostas. Valores maiores permitem narrativas mais longas e detalhadas. Recomendado: 4096+ para aventuras solo."
       },
       "ChatNotifications": {
-        "Name": "Mostrar Notificações no Chat",
-        "Hint": "Exibir respostas da IA como mensagens de chat na janela principal de chat."
+        "Name": "Mostrar Narrativas no Chat",
+        "Hint": "Exibir narrativas da IA como mensagens de chat na janela principal."
       },
       "PlayerCommands": {
         "Name": "Permitir Comandos de Jogadores",
-        "Hint": "Permitir que jogadores (não-GMs) usem os comandos /aidm e /dm no chat. GM sempre tem acesso."
+        "Hint": "Permitir que todos os jogadores usem os comandos /aidm e /dm no chat, não apenas o GM."
       }
     }
   }
