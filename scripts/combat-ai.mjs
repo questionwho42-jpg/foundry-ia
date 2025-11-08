@@ -26,11 +26,11 @@ export class CombatAI {
       const token = currentCombatant.token;
       if (!token) return;
 
-      console.log(\Combat AI | Turno mudou para: \, tipo: \, disposition: \);
+      console.log(`Combat AI | Turno mudou para: ${token.name}, tipo: ${token.actor.type}, disposition: ${token.document.disposition}`);
 
       // Verificar se é NPC inimigo
       if (token.actor.type === "npc" && token.document.disposition === -1) {
-        console.log(`Combat AI | Turno do NPC: ${token.name}`);
+        console.log(`Combat AI | ✓ Turno do NPC inimigo detectado: ${token.name}`);
 
         // Aguardar um pouco para não parecer instantâneo
         await new Promise((resolve) => setTimeout(resolve, 1000));
