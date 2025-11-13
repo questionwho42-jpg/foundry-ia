@@ -33,7 +33,7 @@ export class GeminiAPI {
 
       ui.notifications.warn(
         `Aguarde ${waitSeconds}s para evitar exceder o limite da API (${limit.rpm} requisições/min)`,
-        { permanent: false },
+        { permanent: false }
       );
 
       await new Promise((resolve) => setTimeout(resolve, waitTime));
@@ -84,29 +84,14 @@ export class GeminiAPI {
     });
 
     try {
-      // Obter limite de tokens de pensamento das configura��es
-      const thinkingTokenLimit =
-        game.settings?.get("ai-dungeon-master-pf2e", "thinkingTokenLimit") ||
-        1024;
-
-      // Configura��o de gera��o com suporte a thinking tokens (Gemini 2.5 Pro)
-      const generationConfig = {
-        temperature,
-        maxOutputTokens: maxTokens,
-        topK: 40,
-        topP: 0.95,
-      };
-
-      // Adicionar thoughtConfig apenas para modelos que suportam (Gemini 2.5 Pro)
-      if (this.model.includes("2.5-pro")) {
-        generationConfig.thoughtConfig = {
-          maxThinkingTokens: thinkingTokenLimit,
-        };
-      }
-
       const response = await this.generateContent({
         contents: this.conversationHistory,
-        generationConfig,
+        generationConfig: {
+          temperature,
+          maxOutputTokens: maxTokens,
+          topK: 40,
+          topP: 0.95,
+        },
       });
 
       const responseText = this.extractTextFromResponse(response);
@@ -242,14 +227,6 @@ Forneça APENAS:
 
 Seja DIRETO. Sem lore extenso.`;
 
-    console.log(
-      "Combat AI |  Enviando prompt para Gemini...",
-      prompt.substring(0, 200),
-    );
-    console.log(
-      "Combat AI | 🤖 Enviando prompt para Gemini...",
-      prompt.substring(0, 200),
-    );
     const response = await this.chat(prompt, {
       resetHistory: true,
       temperature: 0.7,
@@ -298,22 +275,12 @@ Forneça APENAS:
 1. Nome da cena (curto)
 2. Descrição (1 frase)
 3. Nome de ${enemyCount} inimigos apropriados para ${locationType}
-4. Objetos (2-4 itens: mesa, caixa, barril, pedra, altar, etc)
 
 Exemplo:
 Nome: Taverna Sombria
 Descrição: Mobília quebrada e cheiro de cerveja.
-Inimigos: Bandido, Capanga
-Objetos: Mesa grande, Barril, Cadeiras quebradas`;
+Inimigos: Bandido, Capanga`;
 
-    console.log(
-      "Combat AI |  Enviando prompt para Gemini...",
-      prompt.substring(0, 200),
-    );
-    console.log(
-      "Combat AI | 🤖 Enviando prompt para Gemini...",
-      prompt.substring(0, 200),
-    );
     const response = await this.chat(prompt, {
       resetHistory: true,
       temperature: 0.6,
@@ -323,9 +290,6 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
     const nameMatch = response.match(/Nome:\s*(.+)/i);
     const descMatch = response.match(/Descrição:\s*(.+)/i);
     const enemiesMatch = response.match(/Inimigos?:\s*(.+)/i);
-    const objectsMatch = response.match(/Objetos?:\s*(.+)/i);
-    const doorsMatch = response.match(/Portas?:\s*(.+)/i);
-    const windowsMatch = response.match(/Janelas?:\s*(.+)/i);
 
     const sceneName = nameMatch
       ? nameMatch[1].trim()
@@ -339,27 +303,6 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
           .map((e) => e.trim())
           .slice(0, enemyCount)
       : Array(enemyCount).fill("Inimigo");
-    const objectNames = objectsMatch
-      ? objectsMatch[1]
-          .split(",")
-          .map((o) => o.trim())
-          .slice(0, 4)
-      : ["Mesa", "Caixa"];
-
-    // Extrair portas e janelas
-    const doorsList = doorsMatch
-      ? doorsMatch[1]
-          .split(",")
-          .map((d) => d.trim().toLowerCase())
-          .filter((d) => ["norte", "sul", "leste", "oeste"].includes(d))
-      : ["sul"]; // Padr?o: porta ao sul
-
-    const windowsList = windowsMatch
-      ? windowsMatch[1]
-          .split(",")
-          .map((w) => w.trim().toLowerCase())
-          .filter((w) => ["norte", "sul", "leste", "oeste"].includes(w))
-      : []; // Padr?o: sem janelas
 
     // Gerar estrutura baseada no tipo de local
     const gridSize = 30;
@@ -370,8 +313,6 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
     const roomHeight = 15;
     const pixelWidth = roomWidth * 100;
     const pixelHeight = roomHeight * 100;
-    const centerH = pixelWidth / 2;
-    const centerV = pixelHeight / 2;
 
     // Paredes formando retângulo
     const walls = [
@@ -410,48 +351,6 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
       };
     });
 
-    // Gerar objetos decorativos espalhados pela sala
-    const objects = objectNames.map((name) => {
-      const x = Math.floor(2 + Math.random() * (roomWidth - 4));
-      const y = Math.floor(2 + Math.random() * (roomHeight - 4));
-      const width = 2; // 2 quadrados
-      const height = 1; // 1 quadrado
-
-      return {
-        name: name,
-        x: x,
-        y: y,
-        width: width,
-        height: height,
-      };
-    });
-
-    // Gerar informa??es de portas para o Foundry
-    const doors = [];
-    const doorPositions = {
-      norte: { x: centerH, y: 0 },
-      sul: { x: centerH, y: pixelHeight },
-      leste: { x: pixelWidth, y: centerV },
-      oeste: { x: 0, y: centerV },
-    };
-
-    doorsList.forEach((dir) => {
-      doors.push({
-        direction: dir,
-        x: doorPositions[dir].x,
-        y: doorPositions[dir].y,
-      });
-    });
-
-    const windows = [];
-    windowsList.forEach((dir) => {
-      windows.push({
-        direction: dir,
-        x: doorPositions[dir].x,
-        y: doorPositions[dir].y,
-      });
-    });
-
     return {
       sceneName,
       description,
@@ -460,9 +359,6 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
       lights,
       playerStart: { x: roomWidth / 2, y: roomHeight - 2 },
       enemies,
-      objects,
-      doors,
-      windows,
     };
   }
 
@@ -486,7 +382,7 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
       const errorData = await response.json().catch(() => ({}));
       throw new Error(
         errorData.error?.message ||
-          `HTTP ${response.status}: ${response.statusText}`,
+          `HTTP ${response.status}: ${response.statusText}`
       );
     }
 
@@ -502,7 +398,7 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
     // Log para debug
     console.log(
       "GeminiAPI | Resposta recebida:",
-      JSON.stringify(response, null, 2),
+      JSON.stringify(response, null, 2)
     );
 
     if (!response.candidates || response.candidates.length === 0) {
@@ -515,7 +411,7 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
     // Verificar se há bloqueio de segurança
     if (candidate.finishReason === "SAFETY") {
       throw new Error(
-        "Resposta bloqueada por filtros de segurança. Tente reformular sua pergunta.",
+        "Resposta bloqueada por filtros de segurança. Tente reformular sua pergunta."
       );
     }
 
@@ -538,7 +434,7 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
         throw new Error(
           `Limite de tokens atingido durante o raciocínio (${thoughtsCount} tokens). Aumente o valor de "Comprimento Máximo da Narrativa" nas configurações para pelo menos ${
             Math.ceil((totalCount + 2000) / 512) * 512
-          }.`,
+          }.`
         );
       }
     }
@@ -580,99 +476,5 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
    */
   getHistory() {
     return [...this.conversationHistory];
-  }
-
-  /**
-   * Decide ação tática para um NPC em combate
-   * @param {Object} npcTokenDoc - TokenDocument do NPC
-   * @param {Object} combatState - Estado do combate (allies, enemies)
-   * @returns {Promise<Object>} Decisão tática {movement, action, target, reasoning}
-   */
-  async decideNPCAction(npcTokenDoc, combatState) {
-    console.log("Combat AI |  decideNPCAction chamado para:", npcTokenDoc.name);
-    const npc = npcTokenDoc.actor;
-    const { allies, enemies } = combatState;
-
-    // Construir prompt tático
-    const prompt = `Você é um mestre tático de Pathfinder 2e. Analise e decida a melhor ação para este NPC:
-
-**NPC**: ${npc.name}
-**HP**: ${npc.system.attributes.hp.value}/${npc.system.attributes.hp.max}
-**CA**: ${npc.system.attributes.ac.value}
-
-**Ações disponíveis**:
-${npc.itemTypes.melee?.map((m) => `- ${m.name} (+${m.system?.bonus?.value || 0})`).join("\n") || "- Ataque básico"}
-
-**Aliados** (${allies.length}):
-${allies.map((a) => `- ${a.name}: ${a.distance} quadrados`).join("\n") || "Nenhum"}
-
-**Inimigos** (${enemies.length}):
-${enemies.map((e) => `- ${e.name}: ${e.distance} quadrados, HP: ${e.hp.value}/${e.hp.max}`).join("\n")}
-
-**Regras PF2e**:
-- 3 ações por turno
-- Movimento: 1 ação
-- Ataque adjacente (1 quadrado)
-
-**Responda APENAS com JSON** (sem markdown):
-{
-  "movement": "aproximar [nome]" ou "ficar",
-  "action": "atacar",
-  "target": "[nome do alvo]",
-  "reasoning": "explicação breve"
-}`;
-
-    console.log(
-      "Combat AI |  Enviando prompt para Gemini...",
-      prompt.substring(0, 200),
-    );
-    console.log(
-      "Combat AI | 🤖 Enviando prompt para Gemini...",
-      prompt.substring(0, 200),
-    );
-    const response = await this.chat(prompt, {
-      temperature: 0.7,
-      maxTokens: 5000,
-      resetHistory: true,
-    });
-
-    console.log(
-      "Combat AI |  Resposta recebida do Gemini:",
-      response.substring(0, 200),
-    );
-    console.log(
-      "Combat AI | ✅ Resposta recebida do Gemini:",
-      response.substring(0, 200),
-    );
-    try {
-      // Limpar resposta
-      let jsonStr = response.trim();
-      if (jsonStr.includes("```")) {
-        jsonStr = jsonStr
-          .replace(/```json?\n?/g, "")
-          .replace(/```/g, "")
-          .trim();
-      }
-
-      const decision = JSON.parse(jsonStr);
-
-      return {
-        movement: decision.movement || "ficar",
-        action: decision.action || "atacar",
-        target: decision.target || enemies[0]?.name,
-        reasoning: decision.reasoning || "Decisão tática padrão",
-      };
-    } catch (error) {
-      console.error("Combat AI | Erro ao parsear:", error);
-
-      // Fallback
-      const closest = enemies[0];
-      return {
-        movement: closest?.distance > 1 ? `aproximar ${closest.name}` : "ficar",
-        action: "atacar",
-        target: closest?.name || "inimigo",
-        reasoning: "Atacar inimigo mais próximo",
-      };
-    }
   }
 }

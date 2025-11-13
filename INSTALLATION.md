@@ -17,6 +17,7 @@
 ### Opção 2: Download Manual
 
 1. **Baixe o ZIP**:
+
    - Vá para: https://github.com/questionwho42-jpg/foundry-ia
    - Clique em "Code" → "Download ZIP"
 
@@ -25,13 +26,13 @@
      - Windows: `%LOCALAPPDATA%\FoundryVTT\Data\modules`
      - Linux: `~/.local/share/FoundryVTT/Data/modules`
      - Mac: `~/Library/Application Support/FoundryVTT/Data/modules`
-   
 3. **Crie a pasta do módulo**:
    - Dentro de `modules`, crie uma pasta chamada **exatamente**: `ai-dungeon-master-pf2e`
-   
 4. **Cole os arquivos**:
+
    - Extraia TODOS os arquivos do ZIP para dentro de `ai-dungeon-master-pf2e`
    - A estrutura deve ficar assim:
+
    ```
    Data/modules/ai-dungeon-master-pf2e/
    ├── module.json
@@ -54,15 +55,17 @@
 **Causas comuns:**
 
 1. **Nome da pasta errado**
+
    - ✅ Correto: `ai-dungeon-master-pf2e`
    - ❌ Errado: `foundry-ia`, `foundry-ia-main`, `ai-dungeon-master`
-   
+
    **Solução**: Renomeie a pasta para exatamente `ai-dungeon-master-pf2e`
 
 2. **Arquivos no lugar errado**
+
    - ❌ Errado: `modules/ai-dungeon-master-pf2e/foundry-ia-main/module.json`
    - ✅ Correto: `modules/ai-dungeon-master-pf2e/module.json`
-   
+
    **Solução**: Mova todos os arquivos para o nível correto da pasta
 
 3. **module.json corrompido**
@@ -72,6 +75,7 @@
 ### ❌ Módulo não aparece na lista
 
 1. **Verifique a localização da pasta**:
+
    ```powershell
    # Windows PowerShell - Execute para ver onde está a pasta Data
    $env:LOCALAPPDATA\FoundryVTT\Data\modules
@@ -79,12 +83,12 @@
 
 2. **Verifique permissões**:
    - Certifique-se de que o Foundry tem permissão para ler a pasta
-   
 3. **Reinicie completamente o Foundry VTT**
 
 ### ❌ Módulo ativa mas não funciona
 
 1. **Verifique o Console (F12)**:
+
    - Procure por erros em vermelho
    - Erros comuns e soluções:
      - `Cannot find module`: Arquivos faltando
@@ -102,7 +106,6 @@ O módulo requer o sistema Pathfinder 2e instalado e ativo:
 1. **Instale o sistema PF2e**:
    - Add-on Systems → Install System
    - Procure por "Pathfinder 2e"
-   
 2. **Crie ou use um mundo PF2e**:
    - O módulo só funciona em mundos usando o sistema PF2e
 
@@ -111,6 +114,7 @@ O módulo requer o sistema Pathfinder 2e instalado e ativo:
 1. **Após ativar o módulo, abra o Console (F12)**
 
 2. **Procure por esta mensagem**:
+
    ```
    AI Dungeon Master | Inicializando módulo
    AI Dungeon Master | Módulo carregado e pronto
@@ -126,11 +130,13 @@ O módulo requer o sistema Pathfinder 2e instalado e ativo:
 ## 📞 Ainda com Problemas?
 
 1. **Verifique os logs**:
+
    - Abra o Console (F12)
    - Aba "Console"
    - Copie qualquer erro em vermelho
 
 2. **Abra uma Issue no GitHub**:
+
    - https://github.com/questionwho42-jpg/foundry-ia/issues
    - Inclua:
      - Versão do Foundry VTT

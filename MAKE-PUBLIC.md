@@ -7,18 +7,22 @@ O erro "No module manifest found" está acontecendo porque o repositório GitHub
 ### Via Interface Web do GitHub:
 
 1. **Acesse o repositório**:
+
    - Vá para: https://github.com/questionwho42-jpg/foundry-ia
 
 2. **Abra as Configurações**:
+
    - Clique na aba **Settings** (Configurações)
    - Role até o final da página
 
 3. **Seção "Danger Zone"**:
+
    - Procure pela seção chamada **"Danger Zone"** (Zona de Perigo) no final
    - Encontre a opção **"Change repository visibility"** (Mudar visibilidade do repositório)
    - Clique em **"Change visibility"**
 
 4. **Selecione "Public"**:
+
    - Escolha a opção **"Make public"** (Tornar público)
    - Digite o nome do repositório para confirmar: `questionwho42-jpg/foundry-ia`
    - Clique em **"I understand, change repository visibility"**
@@ -32,6 +36,7 @@ O erro "No module manifest found" está acontecendo porque o repositório GitHub
 Após tornar o repositório público, teste se o manifest está acessível:
 
 1. **Abra este link no navegador**:
+
    ```
    https://raw.githubusercontent.com/questionwho42-jpg/foundry-ia/main/module.json
    ```
@@ -45,6 +50,7 @@ Após tornar o repositório público, teste se o manifest está acessível:
 Depois que o repositório estiver público:
 
 1. **No Foundry VTT**:
+
    - Add-on Modules → Install Module
    - Cole o Manifest URL:
      ```
@@ -53,6 +59,7 @@ Depois que o repositório estiver público:
    - Clique em **Install**
 
 2. **Ative o módulo**:
+
    - Vá para Module Settings
    - Encontre "AI Dungeon Master for PF2e"
    - Marque a caixa para ativar
@@ -82,6 +89,7 @@ Se tiver problemas para tornar o repositório público:
 ---
 
 **Próximos passos após tornar público**:
+
 1. Tornar o repositório público no GitHub
 2. Verificar o acesso ao manifest
 3. Instalar o módulo no Foundry VTT

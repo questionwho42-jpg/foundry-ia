@@ -1,0 +1,29 @@
+{
+  "name": "foundry-ia",
+  "version": "1.0.0",
+  "description": "🎭 **Narrador de Aventuras Solo com IA** - Um módulo completo para Foundry Virtual Tabletop que transforma suas sessões individuais de Pathfinder 2e em aventuras narrativas imersivas usando o **Google Gemini 2.5 Pro**.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "echo \"Nenhum passo de compilação necessário.\"",
+    "lint": "eslint scripts/",
+    "format": "prettier --write scripts/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/questionwho42-jpg/foundry-ia.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/questionwho42-jpg/foundry-ia/issues"
+  },
+  "homepage": "https://github.com/questionwho42-jpg/foundry-ia#readme",
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.6.2"
+  }
+}

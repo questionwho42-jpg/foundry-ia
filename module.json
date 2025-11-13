@@ -2,7 +2,7 @@
   "id": "ai-dungeon-master-pf2e",
   "title": "AI Solo Adventure Narrator for PF2e",
   "description": "Um narrador de histórias interativo alimentado por IA (Gemini 2.5 Pro) para aventuras solo em Pathfinder 2e. Cria narrativas envolventes, gerencia NPCs, descreve cenas e conduz aventuras completas para um jogador.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "compatibility": {
     "minimum": "11",
     "verified": "12"
@@ -13,12 +13,8 @@
       "url": "https://github.com/questionwho42-jpg"
     }
   ],
-  "esmodules": [
-    "scripts/main.mjs"
-  ],
-  "styles": [
-    "styles/ai-dm.css"
-  ],
+  "esmodules": ["scripts/main.mjs"],
+  "styles": ["styles/ai-dm.css"],
   "languages": [
     {
       "lang": "en",

@@ -14,24 +14,28 @@ Este módulo é o **mestre perfeito para aventuras solo**. Usando o modelo mais 
 ## ✨ Funcionalidades Principais
 
 ### 🎭 Narração Imersiva
+
 - **Narrativa em segunda pessoa** ("você vê", "você sente")
 - **Descrições sensoriais ricas** - visão, som, cheiro, tato
 - **Estilo adaptativo** - terror, fantasia, mistério, aventura
 - **Contexto persistente** - a IA lembra de tudo que aconteceu
 
 ### 🎬 Sistema de Aventuras
+
 - **Início personalizado** - escolha tema e cenário inicial
 - **6 temas prontos** - fantasia medieval, terror gótico, investigação urbana, exploração de masmorras, mistério e pirataria
 - **Progressão natural** - a história evolui baseada nas suas escolhas
 - **Sem trilhos** - total liberdade narrativa
 
 ### 👥 NPCs Vivos
+
 - **Personalidades únicas** - cada NPC tem voz própria
 - **Motivações secretas** - descubra o que realmente querem
 - **Backgrounds ricos** - histórias pessoais interessantes
 - **Ganchos narrativos** - múltiplas formas de envolvimento
 
 ### 🗺️ Descrição de Cenários
+
 - **Atmosfera detalhada** - cada local tem sua personalidade
 - **Detalhes interativos** - elementos que convidam à exploração
 - **Tensão construída** - ritmo narrativo apropriado
@@ -39,16 +43,19 @@ Este módulo é o **mestre perfeito para aventuras solo**. Usando o modelo mais 
 ## 🚀 Modelos Disponíveis
 
 ### Gemini 2.5 Pro (Recomendado) ⭐
+
 - **Melhor para**: Narrativas complexas e imersivas
 - **Força**: Raciocínio avançado, contexto longo (1M tokens)
 - **Ideal para**: Aventuras solo com múltiplas sessões
 
 ### Gemini 2.5 Flash
+
 - **Melhor para**: Sessões rápidas
 - **Força**: Velocidade e eficiência
 - **Ideal para**: One-shots e exploração casual
 
 ### Gemini 2.5 Flash-Lite
+
 - **Melhor para**: Uso econômico
 - **Força**: Custo-benefício
 - **Ideal para**: Testes e uso frequente
@@ -73,6 +80,7 @@ Este módulo é o **mestre perfeito para aventuras solo**. Usando o modelo mais 
 ### Método 3: Via Manifest URL
 
 Use este manifest URL no Foundry:
+
 ```
 https://raw.githubusercontent.com/questionwho42-jpg/foundry-ia/main/module.json
 ```
@@ -112,13 +120,15 @@ https://raw.githubusercontent.com/questionwho42-jpg/foundry-ia/main/module.json
 ### 2️⃣ Durante a Aventura
 
 **Você faz**: Digite suas ações no chat
+
 ```
 Examino o mapa antigo na parede
 Converso com o taberneiro sobre rumores
 Saio pela porta dos fundos silenciosamente
 ```
 
-**A IA responde**: 
+**A IA responde**:
+
 - Descreve o resultado das suas ações
 - Narra as consequências
 - Apresenta novos desafios
@@ -134,21 +144,27 @@ Saio pela porta dos fundos silenciosamente
 ## 🎨 Temas de Aventura
 
 ### 🏰 Fantasia Medieval
+
 Reinos clássicos, dragões, magia e cavalaria
 
-### 🦇 Terror Gótico  
+### 🦇 Terror Gótico
+
 Mansões assombradas, vampiros e mistérios sombrios
 
 ### 🔍 Investigação Urbana
+
 Crimes, conspirações e intrigas políticas
 
 ### ⚔️ Exploração de Masmorras
+
 Ruínas antigas, armadilhas e tesouros perdidos
 
 ### 🎭 Mistério e Intriga
+
 Segredos, traições e reviravoltas inesperadas
 
 ### ⚓ Alto Mar e Pirataria
+
 Navios piratas, ilhas perdidas e aventuras marítimas
 
 ## 🔧 Configurações Avançadas
@@ -162,6 +178,7 @@ Navios piratas, ilhas perdidas e aventuras marítimas
 ### Parâmetros de IA
 
 - **Temperature (0-2)**: Controla criatividade
+
   - 0.3-0.5: Respostas focadas e consistentes
   - 0.7-1.0: Balanceado (recomendado)
   - 1.2-2.0: Mais criativo e variado
@@ -199,6 +216,7 @@ Encontrou um bug? [Abra uma issue](https://github.com/questionwho42-jpg/foundry-
 ## 📝 Changelog
 
 ### v1.0.0 (2025-01-07)
+
 - 🎉 Lançamento inicial
 - ✨ Chat interativo com IA
 - 🎭 Geração de NPCs

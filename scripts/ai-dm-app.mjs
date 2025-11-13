@@ -90,14 +90,14 @@ export class AIDungeonMasterApp extends Application {
     this._hookIds.push(
       Hooks.on("canvasReady", () => {
         this.render(false);
-      })
+      }),
     );
 
     // Hook quando tokens são selecionados/desselecionados
     this._hookIds.push(
       Hooks.on("controlToken", () => {
         this.render(false);
-      })
+      }),
     );
   }
 
@@ -113,7 +113,7 @@ export class AIDungeonMasterApp extends Application {
     const apiKey = game.settings.get("ai-dungeon-master-pf2e", "geminiApiKey");
     if (!apiKey) {
       ui.notifications.error(
-        "Configure sua chave API do Google Gemini nas configurações do módulo!"
+        "Configure sua chave API do Google Gemini nas configurações do módulo!",
       );
       return;
     }
@@ -135,7 +135,7 @@ export class AIDungeonMasterApp extends Application {
       if (!this.gemini) {
         const model = game.settings.get(
           "ai-dungeon-master-pf2e",
-          "geminiModel"
+          "geminiModel",
         );
         this.gemini = new GeminiAPI(apiKey, model);
       }
@@ -224,7 +224,7 @@ export class AIDungeonMasterApp extends Application {
       if (!this.gemini) {
         const model = game.settings.get(
           "ai-dungeon-master-pf2e",
-          "geminiModel"
+          "geminiModel",
         );
         this.gemini = new GeminiAPI(apiKey, model);
       }
@@ -275,7 +275,7 @@ export class AIDungeonMasterApp extends Application {
       if (!this.gemini) {
         const model = game.settings.get(
           "ai-dungeon-master-pf2e",
-          "geminiModel"
+          "geminiModel",
         );
         this.gemini = new GeminiAPI(apiKey, model);
       }
@@ -380,7 +380,7 @@ export class AIDungeonMasterApp extends Application {
       if (!this.gemini) {
         const model = game.settings.get(
           "ai-dungeon-master-pf2e",
-          "geminiModel"
+          "geminiModel",
         );
         this.gemini = new GeminiAPI(apiKey, model);
       }
@@ -391,13 +391,21 @@ export class AIDungeonMasterApp extends Application {
 
       if (!playerActor) {
         ui.notifications.warn(
-          "Nenhum token selecionado. Selecione seu personagem antes de gerar a cena."
+          "Nenhum token selecionado. Selecione seu personagem antes de gerar a cena.",
         );
         return;
       }
 
       ui.notifications.info("Gerando cena de combate... Aguarde.");
       const sceneData = await this.gemini.generateCombatScene(params);
+
+      // Salvar descrição da cena e inimigos na memória da IA
+      const memoriaCena = `Cena: ${sceneData.sceneName}\nDescrição: ${sceneData.description}\nInimigos: ${(sceneData.enemies || []).map((e) => e.name).join(", ")}`;
+      if (typeof registrarMemoriaIA === "function") {
+        await registrarMemoriaIA("cena", "Memória da IA", memoriaCena);
+      } else if (window.registrarMemoriaIA) {
+        await window.registrarMemoriaIA("cena", "Memória da IA", memoriaCena);
+      }
 
       // Criar a cena no Foundry
       const gridSize = 100; // pixels por quadrado
@@ -429,7 +437,7 @@ export class AIDungeonMasterApp extends Application {
             move: 0, // Bloqueia movimento
             sight: 0, // Bloqueia visão
             sound: 0, // Bloqueia som
-          }))
+          })),
         );
       }
 
@@ -450,7 +458,7 @@ export class AIDungeonMasterApp extends Application {
                 intensity: 5,
               },
             },
-          }))
+          })),
         );
       }
 
@@ -461,7 +469,7 @@ export class AIDungeonMasterApp extends Application {
           const packs = game.packs.filter(
             (p) =>
               p.metadata.type === "Actor" &&
-              p.metadata.name.includes("bestiary")
+              p.metadata.name.includes("bestiary"),
           );
           let actor = null;
 
@@ -471,7 +479,7 @@ export class AIDungeonMasterApp extends Application {
             const entry = index.find(
               (e) =>
                 e.name.toLowerCase().includes(enemy.name.toLowerCase()) ||
-                enemy.name.toLowerCase().includes(e.name.toLowerCase())
+                enemy.name.toLowerCase().includes(e.name.toLowerCase()),
             );
 
             if (entry) {
@@ -483,7 +491,7 @@ export class AIDungeonMasterApp extends Application {
           // Se não encontrou no compendium, criar genérico
           if (!actor) {
             console.warn(
-              `AI DM | Criatura "${enemy.name}" não encontrada no compendium, criando genérica`
+              `AI DM | Criatura "${enemy.name}" não encontrada no compendium, criando genérica`,
             );
             actor = await Actor.create({
               name: enemy.name || "Inimigo",
@@ -517,7 +525,7 @@ export class AIDungeonMasterApp extends Application {
           const playerStartX = sceneData.playerStart.x * gridSize;
           const playerStartY = sceneData.playerStart.y * gridSize;
 
-          console.log(`AI DM | DEBUG Scene Info:`, {
+          console.log("AI DM | DEBUG Scene Info:", {
             gridSize: sceneData.gridSize,
             roomDimensions: `${sceneData.gridSize}x${sceneData.gridSize}`,
             playerStartGrid: sceneData.playerStart,
@@ -525,7 +533,7 @@ export class AIDungeonMasterApp extends Application {
             sceneSize: { width: sceneWidth, height: sceneHeight },
           });
 
-          console.log(`AI DM | Adicionando token do jogador:`, {
+          console.log("AI DM | Adicionando token do jogador:", {
             name: playerActor.name,
             actorId: playerActor.id,
             x: playerStartX,
@@ -559,15 +567,15 @@ export class AIDungeonMasterApp extends Application {
 
           const createdTokens = await scene.createEmbeddedDocuments(
             "Token",
-            tokenData
+            tokenData,
           );
-          console.log(`AI DM | Token criado com sucesso:`, createdTokens);
+          console.log("AI DM | Token criado com sucesso:", createdTokens);
 
           ui.notifications.info(
-            `Token de ${playerActor.name} adicionado à cena!`
+            `Token de ${playerActor.name} adicionado à cena!`,
           );
         } catch (error) {
-          console.error(`AI DM | Erro ao adicionar token do jogador:`, error);
+          console.error("AI DM | Erro ao adicionar token do jogador:", error);
           ui.notifications.error(`Erro ao adicionar token: ${error.message}`);
         }
       }
@@ -596,7 +604,7 @@ export class AIDungeonMasterApp extends Application {
 
         await scene.createEmbeddedDocuments("Drawing", drawings);
         ui.notifications.info(
-          `${sceneData.objects.length} objetos adicionados à cena!`
+          `${sceneData.objects.length} objetos adicionados à cena!`,
         );
       }
 
@@ -613,7 +621,7 @@ export class AIDungeonMasterApp extends Application {
       const playerStartY = sceneData.playerStart.y * gridSize;
 
       console.log(
-        `AI DM | Centralizando câmera em: x=${playerStartX}, y=${playerStartY}`
+        `AI DM | Centralizando câmera em: x=${playerStartX}, y=${playerStartY}`,
       );
 
       await canvas.animatePan({
@@ -624,7 +632,7 @@ export class AIDungeonMasterApp extends Application {
       });
 
       ui.notifications.success(
-        `Cena "${sceneData.sceneName}" criada com sucesso!`
+        `Cena "${sceneData.sceneName}" criada com sucesso!`,
       );
 
       this.conversationHistory.push({
@@ -709,7 +717,7 @@ export class AIDungeonMasterApp extends Application {
       if (!this.gemini) {
         const model = game.settings.get(
           "ai-dungeon-master-pf2e",
-          "geminiModel"
+          "geminiModel",
         );
         this.gemini = new GeminiAPI(apiKey, model);
       }
@@ -720,6 +728,14 @@ export class AIDungeonMasterApp extends Application {
       // Extrair nome do NPC da resposta
       const nameMatch = npc.description.match(/\*\*Nome:\*\*\s*([^\n]+)/i);
       const npcName = nameMatch ? nameMatch[1].trim() : "NPC Gerado pela IA";
+
+      // Salvar descrição do NPC na memória da IA
+      const memoriaNPC = `NPC: ${npcName}\nNível: ${npc.rawData.adjustedLevel || params.level || 1}\nDescrição: ${npc.description}`;
+      if (typeof registrarMemoriaIA === "function") {
+        await registrarMemoriaIA("npc", "Memória da IA", memoriaNPC);
+      } else if (window.registrarMemoriaIA) {
+        await window.registrarMemoriaIA("npc", "Memória da IA", memoriaNPC);
+      }
 
       // Usar nível ajustado para desafio solo
       const npcLevel = npc.rawData.adjustedLevel || params.level || 1;
@@ -739,7 +755,7 @@ export class AIDungeonMasterApp extends Application {
 
       if (actor) {
         ui.notifications.success(
-          `NPC "${npcName}" (Nível ${npcLevel}) criado com sucesso!`
+          `NPC "${npcName}" (Nível ${npcLevel}) criado com sucesso!`,
         );
 
         // Abrir ficha do NPC
@@ -804,7 +820,7 @@ export class AIDungeonMasterApp extends Application {
       if (!this.gemini) {
         const model = game.settings.get(
           "ai-dungeon-master-pf2e",
-          "geminiModel"
+          "geminiModel",
         );
         this.gemini = new GeminiAPI(apiKey, model);
       }

@@ -1,30 +1,34 @@
-{
-  "AIDM": {
-    "Settings": {
-      "ApiKey": {
-        "Name": "Chave API do Google Gemini",
-        "Hint": "Sua chave API do Google AI Studio (https://ai.google.dev/). Necessária para usar o Narrador de Aventuras Solo com IA."
-      },
-      "Model": {
-        "Name": "Modelo do Gemini",
-        "Hint": "TIER GRATUITO: Flash (10 req/min) ou Flash-8B (15 req/min) são ideais. Pro (2 req/min) requer conta paga ou aguardar 30s entre ações."
-      },
-      "Temperature": {
-        "Name": "Criatividade da IA (Temperatura)",
-        "Hint": "Controla a criatividade nas narrativas. Valores mais baixos (0.5) são mais consistentes, valores mais altos (1.2) são mais criativos e imprevisíveis. Recomendado: 0.8-0.9 para aventuras."
-      },
-      "MaxTokens": {
-        "Name": "Comprimento Máximo da Narrativa",
-        "Hint": "Tokens para raciocínio + resposta. Gemini 2.5 Pro: MÍNIMO 8192 (usa ~2000 para raciocínio). Flash/Flash-8B: mínimo 2048. Valores baixos truncam a narrativa."
-      },
-      "ChatNotifications": {
-        "Name": "Mostrar Narrativas no Chat",
-        "Hint": "Exibir narrativas da IA como mensagens de chat na janela principal."
-      },
-      "PlayerCommands": {
-        "Name": "Permitir Comandos de Jogadores",
-        "Hint": "Permitir que todos os jogadores usem os comandos /aidm e /dm no chat, não apenas o GM."
-      }
-    }
-  }
+﻿{
+    "AIDM":  {
+                 "Settings":  {
+                                  "ApiKey":  {
+                                                 "Name":  "Chave API do Google Gemini",
+                                                 "Hint":  "Sua chave API do Google AI Studio (https://ai.google.dev/). NecessÃ¡ria para usar o Narrador de Aventuras Solo com IA."
+                                             },
+                                  "Model":  {
+                                                "Name":  "Modelo do Gemini",
+                                                "Hint":  "TIER GRATUITO: Flash (10 req/min) ou Flash-8B (15 req/min) sÃ£o ideais. Pro (2 req/min) requer conta paga ou aguardar 30s entre aÃ§Ãµes."
+                                            },
+                                  "Temperature":  {
+                                                      "Name":  "Criatividade da IA (Temperatura)",
+                                                      "Hint":  "Controla a criatividade nas narrativas. Valores mais baixos (0.5) sÃ£o mais consistentes, valores mais altos (1.2) sÃ£o mais criativos e imprevisÃ­veis. Recomendado: 0.8-0.9 para aventuras."
+                                                  },
+                                  "MaxTokens":  {
+                                                    "Name":  "Comprimento MÃ¡ximo da Narrativa",
+                                                    "Hint":  "Tokens para raciocÃ­nio + resposta. Gemini 2.5 Pro: MÃNIMO 8192 (usa ~2000 para raciocÃ­nio). Flash/Flash-8B: mÃ­nimo 2048. Valores baixos truncam a narrativa."
+                                                },
+                                  "ChatNotifications":  {
+                                                            "Name":  "Mostrar Narrativas no Chat",
+                                                            "Hint":  "Exibir narrativas da IA como mensagens de chat na janela principal."
+                                                        },
+                                  "PlayerCommands":  {
+                                                         "Name":  "Permitir Comandos de Jogadores",
+                                                         "Hint":  "Permitir que todos os jogadores usem os comandos /aidm e /dm no chat, nÃ£o apenas o GM."
+                                                     },
+                                  "ThinkingTokenLimit":  {
+                                                             "Hint":  "Controla quantos tokens o Gemini 2.5 Pro pode usar para \u0027pensar\u0027 antes de responder. Valores menores (512-1024) deixam mais tokens para a resposta. Valores maiores (2048-4096) permitem raciocínio mais profundo mas reduzem a resposta. Recomendado: 1024 para combate tático, 512 para narrativa rápida.",
+                                                             "Name":  "Limite de Tokens para Raciocínio"
+                                                         }
+                              }
+             }
 }

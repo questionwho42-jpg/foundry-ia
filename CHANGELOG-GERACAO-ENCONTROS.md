@@ -15,32 +15,35 @@ Implementação de 3 melhorias importantes na geração automática de cenas de 
 ### 1. 🎭 Uso de Criaturas do Compendium
 
 **Problema Anterior:**
+
 - Sistema criava NPCs genéricos vazios
 - Sem estatísticas reais de PF2e
 - Apenas nome e nível básico
 
 **Solução Implementada:**
+
 - Busca automática nos bestiários do PF2e
 - Procura por nome da criatura nos compendiums
 - Usa criaturas reais com stats completos
 - Fallback para NPC genérico se não encontrar
 
 **Código Adicionado:**
+
 ```javascript
 // Buscar no compendium de bestiário PF2e
-const packs = game.packs.filter(p => 
-  p.metadata.type === 'Actor' && 
-  p.metadata.name.includes('bestiary')
+const packs = game.packs.filter(
+  (p) => p.metadata.type === "Actor" && p.metadata.name.includes("bestiary")
 );
 
 // Tentar encontrar criatura por nome
 for (const pack of packs) {
   const index = await pack.getIndex();
-  const entry = index.find(e => 
-    e.name.toLowerCase().includes(enemy.name.toLowerCase()) ||
-    enemy.name.toLowerCase().includes(e.name.toLowerCase())
+  const entry = index.find(
+    (e) =>
+      e.name.toLowerCase().includes(enemy.name.toLowerCase()) ||
+      enemy.name.toLowerCase().includes(e.name.toLowerCase())
   );
-  
+
   if (entry) {
     actor = await pack.getDocument(entry._id);
     break;
@@ -49,6 +52,7 @@ for (const pack of packs) {
 ```
 
 **Benefícios:**
+
 - ✅ Criaturas com fichas completas
 - ✅ Estatísticas oficiais do PF2e
 - ✅ Habilidades especiais funcionais
@@ -59,41 +63,51 @@ for (const pack of packs) {
 ### 2. 🎮 Token do Jogador Adicionado Automaticamente
 
 **Problema Anterior:**
+
 - Jogador precisava adicionar token manualmente
 - Cena criada sem personagem do jogador
 
 **Solução Implementada:**
+
 - Detecta token selecionado pelo jogador
 - Adiciona automaticamente na posição inicial (sul da sala)
 - Link ao ator original mantido
 - Aviso se nenhum token estiver selecionado
 
 **Código Adicionado:**
+
 ```javascript
 // Adicionar token do jogador
 const playerToken = canvas.tokens?.controlled[0];
 if (playerToken && playerToken.actor) {
   const playerStartX = sceneData.playerStart.x * gridSize;
   const playerStartY = sceneData.playerStart.y * gridSize;
-  
-  await scene.createEmbeddedDocuments("Token", [{
-    name: playerToken.actor.name,
-    actorId: playerToken.actor.id,
-    actorLink: true,  // Linkar ao ator original
-    x: playerStartX,
-    y: playerStartY,
-    disposition: 1,  // Amigável
-    hidden: false,
-    vision: true
-  }]);
-  
-  ui.notifications.info(`Token de ${playerToken.actor.name} adicionado à cena!`);
+
+  await scene.createEmbeddedDocuments("Token", [
+    {
+      name: playerToken.actor.name,
+      actorId: playerToken.actor.id,
+      actorLink: true, // Linkar ao ator original
+      x: playerStartX,
+      y: playerStartY,
+      disposition: 1, // Amigável
+      hidden: false,
+      vision: true,
+    },
+  ]);
+
+  ui.notifications.info(
+    `Token de ${playerToken.actor.name} adicionado à cena!`
+  );
 } else {
-  ui.notifications.warn('Nenhum token selecionado. Selecione seu personagem antes de gerar a cena.');
+  ui.notifications.warn(
+    "Nenhum token selecionado. Selecione seu personagem antes de gerar a cena."
+  );
 }
 ```
 
 **Benefícios:**
+
 - ✅ Token posicionado automaticamente
 - ✅ Pronto para começar o combate
 - ✅ Sem trabalho manual
@@ -104,11 +118,13 @@ if (playerToken && playerToken.actor) {
 ### 3. 🪑 Objetos Decorativos com Drawing Tools
 
 **Problema Anterior:**
+
 - Cenas vazias, apenas paredes
 - Sem contexto visual
 - Falta de objetos para táticas (cobertura, obstáculos)
 
 **Solução Implementada:**
+
 - IA sugere 2-4 objetos contextuais
 - Objetos desenhados como retângulos com labels
 - Posicionamento aleatório pela sala
@@ -117,6 +133,7 @@ if (playerToken && playerToken.actor) {
 **Código Adicionado:**
 
 **gemini-api.mjs:**
+
 ```javascript
 // Prompt atualizado
 const prompt = `Cena de combate para Pathfinder 2e:
@@ -138,8 +155,11 @@ Objetos: Mesa grande, Barril, Cadeiras quebradas`;
 // Extração de objetos
 const objectsMatch = response.match(/Objetos?:\s*(.+)/i);
 const objectNames = objectsMatch
-  ? objectsMatch[1].split(',').map(o => o.trim()).slice(0, 4)
-  : ['Mesa', 'Caixa'];
+  ? objectsMatch[1]
+      .split(",")
+      .map((o) => o.trim())
+      .slice(0, 4)
+  : ["Mesa", "Caixa"];
 
 // Geração de posições
 const objects = objectNames.map((name) => {
@@ -147,41 +167,45 @@ const objects = objectNames.map((name) => {
   const y = Math.floor(2 + Math.random() * (roomHeight - 4));
   const width = 2; // 2 quadrados
   const height = 1; // 1 quadrado
-  
+
   return { name, x, y, width, height };
 });
 ```
 
 **ai-dm-app.mjs:**
+
 ```javascript
 // Desenhar objetos decorativos
 if (sceneData.objects && sceneData.objects.length > 0) {
-  const drawings = sceneData.objects.map(obj => ({
+  const drawings = sceneData.objects.map((obj) => ({
     x: obj.x * gridSize,
     y: obj.y * gridSize,
     shape: {
-      type: 'r',  // Retângulo
+      type: "r", // Retângulo
       width: obj.width * gridSize,
-      height: obj.height * gridSize
+      height: obj.height * gridSize,
     },
-    fillColor: '#8B4513',  // Marrom
+    fillColor: "#8B4513", // Marrom
     fillAlpha: 0.5,
     strokeWidth: 2,
-    strokeColor: '#000000',
+    strokeColor: "#000000",
     strokeAlpha: 1,
     text: obj.name,
-    textColor: '#FFFFFF',
+    textColor: "#FFFFFF",
     textAlpha: 1,
     fontSize: 24,
-    fontFamily: 'Signika'
+    fontFamily: "Signika",
   }));
-  
+
   await scene.createEmbeddedDocuments("Drawing", drawings);
-  ui.notifications.info(`${sceneData.objects.length} objetos adicionados à cena!`);
+  ui.notifications.info(
+    `${sceneData.objects.length} objetos adicionados à cena!`
+  );
 }
 ```
 
 **Benefícios:**
+
 - ✅ Cenas visualmente ricas
 - ✅ Objetos temáticos (taverna = mesas, caverna = pedras)
 - ✅ Possibilidade de cobertura tática
@@ -192,6 +216,7 @@ if (sceneData.objects && sceneData.objects.length > 0) {
 ## 🔧 Arquivos Modificados
 
 ### scripts/gemini-api.mjs
+
 - **Linha 277:** Adicionado item 4 ao prompt (Objetos)
 - **Linha 282:** Adicionado exemplo de objetos
 - **Linha 295:** Extração de `objectsMatch`
@@ -200,11 +225,13 @@ if (sceneData.objects && sceneData.objects.length > 0) {
 - **Linha 381:** Adicionado `objects` ao retorno
 
 ### scripts/ai-dm-app.mjs
+
 - **Linha 415-461:** Substituída criação de NPC por busca no compendium
 - **Linha 465-489:** Adicionado token do jogador automaticamente
 - **Linha 491-512:** Criação de drawings para objetos decorativos
 
 ### IMPLEMENTATION_PROMPT.md
+
 - Novo arquivo com guia completo de implementação
 - Prompts otimizados para cada modificação
 - Instruções de testagem
@@ -214,17 +241,20 @@ if (sceneData.objects && sceneData.objects.length > 0) {
 ## ✅ Validações Realizadas
 
 ### Verificação de Sintaxe
+
 ```bash
 ✅ node --check scripts/gemini-api.mjs
 ✅ node --check scripts/ai-dm-app.mjs
 ```
 
 ### Erros de Linting
+
 - Apenas avisos de estilo de código (não críticos)
 - Variáveis não utilizadas em parâmetros (padrão em callbacks)
 - Complexidade cognitiva (método grande mas funcional)
 
 ### Integridade do Código
+
 - ✅ Nenhuma função removida
 - ✅ Toda lógica original preservada
 - ✅ Apenas adições e melhorias
@@ -246,6 +276,7 @@ if (sceneData.objects && sceneData.objects.length > 0) {
 6. Clique **"Gerar Cena"**
 
 **Resultado Esperado:**
+
 - ✅ Cena criada com nome temático
 - ✅ 2 criaturas do bestiário PF2e (ex: "Goblin Warrior")
 - ✅ Seu personagem no sul da sala
@@ -280,11 +311,13 @@ if (sceneData.objects && sceneData.objects.length > 0) {
 ## 🐛 Problemas Conhecidos
 
 ### Avisos de Linting (Não Críticos)
+
 - `'i' is defined but never used` em map - Removido ✅
 - `Use RegExp.exec()` em matches - Estilo preferido, não afeta função
 - `Cognitive Complexity` - Método grande mas funcional
 
 ### Possíveis Melhorias Futuras
+
 - Cache de compendiums para busca mais rápida
 - Suporte a múltiplos tipos de objetos (móveis, decoração, baús)
 - Objetos com propriedades especiais (cobertura, difícil terreno)
