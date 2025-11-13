@@ -57,6 +57,7 @@ Hooks.once("ready", function () {
  */
 Hooks.on("getSceneControlButtons", (controls) => {
   if (game.user.isGM) {
+    console.log("AI Dungeon Master | Inspecionando o objeto 'controls':", controls);
     let controlsArray = controls;
 
     // Se 'controls' não for um array, tenta encontrar o array de controles dentro do objeto.
