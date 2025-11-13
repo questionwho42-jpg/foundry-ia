@@ -39,8 +39,8 @@
     ]
   },
   "url": "https://github.com/questionwho42-jpg/foundry-ia",
-  "manifest": "https://raw.githubusercontent.com/questionwho42-jpg/foundry-ia/geracao-de-encontros/module.json",
-  "download": "https://github.com/questionwho42-jpg/foundry-ia/archive/refs/heads/geracao-de-encontros.zip",
+  "manifest": "https://raw.githubusercontent.com/questionwho42-jpg/foundry-ia/main/module.json",
+  "download": "https://github.com/questionwho42-jpg/foundry-ia/archive/refs/heads/main.zip",
   "license": "LICENSE",
   "readme": "README.md",
   "bugs": "https://github.com/questionwho42-jpg/foundry-ia/issues"
